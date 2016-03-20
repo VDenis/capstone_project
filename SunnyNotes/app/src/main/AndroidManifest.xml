@@ -24,6 +24,11 @@
         </activity>
 
         <service android:name=".service.SunnyNotesService"/>
+
+        <provider
+            android:authorities="com.denis.home.sunnynotes.data.NoteProvider"
+            android:name="com.denis.home.sunnynotes.data.generated.NoteProvider"
+            android:exported="false"/>
     </application>
 
 
