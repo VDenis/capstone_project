@@ -1,6 +1,7 @@
 package com.denis.home.sunnynotes;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +21,10 @@ import com.facebook.stetho.Stetho;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Cursor mCursor;
+
+/*    private QuoteCursorAdapter mCursorAdapter;*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +34,20 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+/*        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+
+        mCursorAdapter = new QuoteCursorAdapter(this, null);
+        recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
+                new RecyclerViewItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View v, int position) {
+                        // do something on item click
+                    }
+                }));
+        recyclerView.setAdapter(mCursorAdapter);*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
