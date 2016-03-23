@@ -2,6 +2,7 @@ package com.denis.home.sunnynotes;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -15,13 +16,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.denis.home.sunnynotes.noteDetail.NoteDetailActivity;
+import com.denis.home.sunnynotes.noteDetail.NoteDetailFragment;
+import com.denis.home.sunnynotes.noteList.NoteListFragment;
 import com.denis.home.sunnynotes.service.SunnyNotesService;
 import com.facebook.stetho.Stetho;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NoteListFragment.Callback {
 
     private Cursor mCursor;
+
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPane;
 
 /*    private QuoteCursorAdapter mCursorAdapter;*/
 
@@ -34,6 +42,24 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (findViewById(R.id.note_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                // TODO: change to real container
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.note_detail_container, new NoteDetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
 
 /*        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -129,5 +155,24 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onItemSelected(Uri noteIdUri) {
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            NoteDetailFragment fragment = NoteDetailFragment.newInstance(noteIdUri);
+
+            // TODO: change to real container
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.note_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, NoteDetailActivity.class)
+                    .setData(noteIdUri);
+            startActivity(intent);
+        }
     }
 }

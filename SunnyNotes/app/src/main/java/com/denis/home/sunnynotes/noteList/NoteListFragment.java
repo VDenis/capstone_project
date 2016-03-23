@@ -35,6 +35,17 @@ public class NoteListFragment extends Fragment implements LoaderManager.LoaderCa
         // Required empty public constructor
     }
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri noteIdUri);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +57,10 @@ public class NoteListFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onClick(int noteId, NoteListAdapter.NoteListAdapterViewHolder vh) {
                 int position = vh.getAdapterPosition();
+                // ToDO: id or file id
+                ((Callback) getActivity())
+                        .onItemSelected(NoteProvider.Notes.withId(noteId));
+                //TODO: delete debug toast
                 String text = "Click on note, id: " + noteId + ", position: " + position;
                 Toast.makeText(getActivity(),
                         text,
@@ -72,7 +87,7 @@ public class NoteListFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     // since update database, when we create the loader, all we need to do is restart things
-    void onLocationChanged( ) {
+    void onLocationChanged() {
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 

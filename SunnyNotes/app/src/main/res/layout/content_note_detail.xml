@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Unused -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/note_detail_container"
+    tools:context="com.denis.home.sunnynotes.noteDetail.NoteDetailActivity"
+    tools:layout="@layout/fragment_note_detail">
+
+
+<!--    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hi hi hih"
+        android:layout_gravity="left|center_vertical"/>-->
+</FrameLayout>

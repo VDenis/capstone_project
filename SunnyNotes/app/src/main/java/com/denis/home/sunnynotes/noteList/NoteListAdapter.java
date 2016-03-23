@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.denis.home.sunnynotes.R;
+import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
 
 /**
@@ -46,6 +47,7 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteLi
         mCursor.moveToPosition(position);
 
         String noteName = mCursor.getString(mCursor.getColumnIndex(NoteColumns.FILE_NAME));
+        noteName = Utility.stripDotTxtInString(noteName);
         holder.mNoteNameView.setText(noteName);
     }
 

@@ -17,7 +17,8 @@
             android:fontFamily="sans-serif-light"
             android:gravity="start"
             android:textSize="@dimen/note_text_size"
-            tools:text="Test note name"/>
+            android:maxLines="1"
+            tools:text="Test note name Test note name Test note name"/>
 
     </LinearLayout>
 </FrameLayout>
