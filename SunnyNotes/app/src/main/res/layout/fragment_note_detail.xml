@@ -10,19 +10,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <EditText
+            android:id="@+id/note_title_edittext_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:inputType="text"
+            android:ellipsize="end"
+            android:maxLength="64"
+            android:textSize="@dimen/note_title_textsize"
+            android:hint="@string/note_title_hint"
+            tools:text="Test note title Test note title Test note title"/>
+
+<!--        <EditText
             android:id="@+id/note_title_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textSize="@dimen/note_title_textsize"
-            tools:text="Test note title Test note title Test note title"/>
+            tools:text="Test note title Test note title Test note title"/>-->
 
-        <TextView
+        <EditText
+            android:id="@+id/note_content_edittext_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/note_content_textsize"
+            android:hint="@string/note_content_hint"
+            tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>
+
+<!--        <EditText
             android:id="@+id/note_content_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/note_content_textsize"
-            tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>
+            tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>-->
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

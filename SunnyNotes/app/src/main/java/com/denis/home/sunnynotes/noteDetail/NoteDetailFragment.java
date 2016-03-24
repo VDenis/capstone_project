@@ -11,13 +11,15 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
+import com.denis.home.sunnynotes.service.ActionServiceHelper;
 
 import timber.log.Timber;
 
@@ -33,8 +35,9 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
     private static final int DETAIL_LOADER = 0;
 
-    private TextView mNoteTitleView;
-    private TextView mNoteContentView;
+    private EditText mNoteTitleView;
+    private EditText mNoteContentView;
+    private boolean isAddMode = false;
 
     public NoteDetailFragment() {
         // Required empty public constructor
@@ -52,9 +55,38 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if ( getActivity() instanceof NoteDetailActivity ){
             // Inflate the menu; this adds items to the action bar if it is present.
-            inflater.inflate(R.menu.main, menu);
+            inflater.inflate(R.menu.detail, menu);
             //finishCreatingMenu(menu);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_delete_note) {
+            if (mUri != null) {
+                Utility.deleteTxtFile(getActivity(), mUri);
+                ActionServiceHelper.Delete(getActivity(), mUri);
+
+                getActivity().finish();
+            }
+            return true;
+        } else if (id == R.id.action_save_note) {
+            if (mUri != null) {
+                // TODO: validation
+                String content = mNoteContentView.getText().toString();
+                Utility.updateTxtFile(getActivity(), mUri, content);
+                ActionServiceHelper.Update(getActivity(), mUri);
+            } else {
+                String filename = mNoteTitleView.getText().toString();
+                String content = mNoteContentView.getText().toString();
+                String filePath = Utility.createTxtFile(getActivity(), filename, content);
+                ActionServiceHelper.Add(getActivity(), filePath);
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -77,6 +109,9 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mUri = getArguments().getParcelable(DETAIL_URI);
+            if (mUri == null) {
+                isAddMode = true;
+            }
         }
     }
 
@@ -86,14 +121,16 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_note_detail, container, false);
 
-        mNoteTitleView = (TextView) rootView.findViewById(R.id.note_title_textview);
-        mNoteContentView = (TextView) rootView.findViewById(R.id.note_content_text_view);
+        mNoteTitleView = (EditText) rootView.findViewById(R.id.note_title_edittext_view);
+        mNoteContentView = (EditText) rootView.findViewById(R.id.note_content_edittext_view);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        if (!isAddMode) {
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        }
         super.onActivityCreated(savedInstanceState);
     }
 

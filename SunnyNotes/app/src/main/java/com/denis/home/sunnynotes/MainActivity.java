@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -79,8 +78,9 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                NavigateToDetailView(null);
             }
         });
 
@@ -159,13 +159,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(Uri noteUri) {
+        NavigateToDetailView(noteUri);
+    }
+
+    private void NavigateToDetailView(Uri noteUri) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             NoteDetailFragment fragment = NoteDetailFragment.newInstance(noteUri);
 
-            // TODO: change to real container
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.note_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
@@ -173,8 +176,6 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, NoteDetailActivity.class)
                     .setData(noteUri);
             startActivity(intent);
-
-            // Test //ActionServiceHelper.Delete(this, noteUri);
         }
     }
 }

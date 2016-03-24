@@ -8,17 +8,19 @@ import android.net.Uri;
  * Created by Denis on 24.03.2016.
  */
 public class ActionServiceHelper {
-    public static void Add(Context context, Uri noteUri) {
+    public static void Add(Context context, String localPath) {
         /*
          * Creates a new Intent to start the ActionService
          * IntentService. Passes a URI in the
          * Intent's "data" field.
          */
-        Intent serviceIntent = new Intent(context, ActionService.class);
-        serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_ADD);
-        serviceIntent.setData(noteUri);
-        // Starts the IntentService
-        context.startService(serviceIntent);
+        if (localPath != null && !localPath.isEmpty()) {
+            Intent serviceIntent = new Intent(context, ActionService.class);
+            serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_ADD);
+            serviceIntent.putExtra(ActionService.OPERATION_ADD_LOWER_FILE_PATH, localPath);
+            // Starts the IntentService
+            context.startService(serviceIntent);
+        }
     }
 
     public static void Delete(Context context, Uri noteUri) {
@@ -27,12 +29,22 @@ public class ActionServiceHelper {
          * IntentService. Passes a URI in the
          * Intent's "data" field.
          */
-        Intent serviceIntent = new Intent(context, ActionService.class);
-        serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_DELETE);
-        serviceIntent.setData(noteUri);
-        // Starts the IntentService
-        context.startService(serviceIntent);
+        if (noteUri != null) {
+            Intent serviceIntent = new Intent(context, ActionService.class);
+            serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_DELETE);
+            serviceIntent.setData(noteUri);
+            // Starts the IntentService
+            context.startService(serviceIntent);
+        }
     }
 
 
+    public static void Update(Context context, Uri noteUri) {
+        if (noteUri != null) {
+            Intent serviceIntent = new Intent(context, ActionService.class);
+            serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_UPDATE);
+            serviceIntent.setData(noteUri);
+            context.startService(serviceIntent);
+        }
+    }
 }
