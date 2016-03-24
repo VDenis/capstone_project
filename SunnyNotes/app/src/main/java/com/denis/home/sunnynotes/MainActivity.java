@@ -158,12 +158,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemSelected(Uri noteIdUri) {
+    public void onItemSelected(Uri noteUri) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            NoteDetailFragment fragment = NoteDetailFragment.newInstance(noteIdUri);
+            NoteDetailFragment fragment = NoteDetailFragment.newInstance(noteUri);
 
             // TODO: change to real container
             getSupportFragmentManager().beginTransaction()
@@ -171,8 +171,10 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         } else {
             Intent intent = new Intent(this, NoteDetailActivity.class)
-                    .setData(noteIdUri);
+                    .setData(noteUri);
             startActivity(intent);
+
+            // Test //ActionServiceHelper.Delete(this, noteUri);
         }
     }
 }

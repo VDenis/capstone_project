@@ -22,13 +22,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.SunnyNotesService"/>
-
-        <provider
-            android:name=".data.generated.NoteProvider"
-            android:authorities="com.denis.home.sunnynotes.data.NoteProvider"
-            android:exported="false"/>
-
         <activity
             android:name=".noteDetail.NoteDetailActivity"
             android:label="@string/title_activity_note_detail"
@@ -38,6 +31,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.denis.home.sunnynotes.MainActivity" />>
         </activity>
+
+        <service android:name=".service.SunnyNotesService"/>
+
+        <service android:name=".service.ActionService"/>
+
+        <provider
+            android:name=".data.generated.NoteProvider"
+            android:authorities="com.denis.home.sunnynotes.data.NoteProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

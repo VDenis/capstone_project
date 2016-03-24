@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.RemoteException;
 
 import com.denis.home.sunnynotes.BuildConfig;
+import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
 import com.denis.home.sunnynotes.data.NoteProvider;
 import com.dropbox.core.DbxException;
@@ -50,7 +51,7 @@ public class SunnyNotesService extends IntentService {
     }
 
     private void Test() {
-        DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial", "en_US");
+        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
         client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);
 
         // Get current account info
@@ -109,6 +110,8 @@ public class SunnyNotesService extends IntentService {
 
                 initQueryCursor.moveToNext();
             }*/
+        }
+        if (initQueryCursor != null) {
             initQueryCursor.close();
         }
 
@@ -155,7 +158,7 @@ public class SunnyNotesService extends IntentService {
 
         String server_lower_path = fileMetadata.getPathLower();
         File path = getFilesDir();
-        File folder = new File(path + server_lower_path.substring(0, server_lower_path.length()-fileMetadata.getName().length()));
+        File folder = new File(path + server_lower_path.substring(0, server_lower_path.length() - fileMetadata.getName().length()));
 
         // Make sure the Downloads directory exists.
         if (!folder.exists()) {
@@ -172,11 +175,16 @@ public class SunnyNotesService extends IntentService {
         try {
             File file = new File(path + server_lower_path);
             outputStream = new FileOutputStream(file);
-            client.files.download(server_lower_path).download(outputStream);
-            outputStream.close();
+            FileMetadata result = client.files.download(server_lower_path).download(outputStream);
             isDownload = true;
         } catch (DbxException | IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return isDownload;
@@ -185,15 +193,17 @@ public class SunnyNotesService extends IntentService {
     private boolean deleteFile(FileMetadata fileMetadata) {
         boolean isDelete = false;
 
-        String server_lower_path = fileMetadata.getPathLower();
+        String serverLowerPath = fileMetadata.getPathLower();
         File path = getFilesDir();
-        File file = new File(path + server_lower_path);
+        File file = new File(path + serverLowerPath);
 
         // Make sure the Downloads directory exists.
         if (!file.exists()) { // TODO or if (file != null) {
             return isDelete;
         } else {
-            file.delete();
+            if (file.delete()) {
+                isDelete = true;
+            }
         }
 
         return isDelete;

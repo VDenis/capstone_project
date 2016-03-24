@@ -1,17 +1,28 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_marginTop="?attr/actionBarSize"
-             tools:context="com.denis.home.sunnynotes.noteDetail.NoteDetailFragment">
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                                            xmlns:tools="http://schemas.android.com/tools"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginTop="?attr/actionBarSize"
+                                            tools:context="com.denis.home.sunnynotes.noteDetail.NoteDetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/note_title_textview"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="@dimen/note_title_textsize"
-        android:maxLines="1"
-        tools:text="Test note title Test note title Test note title"/>
+        android:orientation="vertical">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/note_title_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="@dimen/note_title_textsize"
+            tools:text="Test note title Test note title Test note title"/>
+
+        <TextView
+            android:id="@+id/note_content_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/note_content_textsize"
+            tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

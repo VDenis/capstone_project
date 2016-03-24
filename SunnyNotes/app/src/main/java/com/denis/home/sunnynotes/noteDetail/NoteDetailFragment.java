@@ -34,6 +34,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     private static final int DETAIL_LOADER = 0;
 
     private TextView mNoteTitleView;
+    private TextView mNoteContentView;
 
     public NoteDetailFragment() {
         // Required empty public constructor
@@ -60,13 +61,13 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param contentUri content uri .
+     * @param noteUri content uri .
      * @return A new instance of fragment NoteDetailFragment.
      */
-    public static NoteDetailFragment newInstance(Uri contentUri) {
+    public static NoteDetailFragment newInstance(Uri noteUri) {
         NoteDetailFragment fragment = new NoteDetailFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DETAIL_URI, contentUri);
+        args.putParcelable(DETAIL_URI, noteUri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,6 +87,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         View rootView = inflater.inflate(R.layout.fragment_note_detail, container, false);
 
         mNoteTitleView = (TextView) rootView.findViewById(R.id.note_title_textview);
+        mNoteContentView = (TextView) rootView.findViewById(R.id.note_content_text_view);
         return rootView;
     }
 
@@ -93,6 +95,24 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null && data.moveToFirst()) {
+            String noteName = data.getString(data.getColumnIndex(NoteColumns.FILE_NAME));
+            noteName = Utility.stripDotTxtInString(noteName);
+
+            String lowerPath = data.getString(data.getColumnIndex(NoteColumns.LOWER_PATH));
+
+            // TODO: getActivity? or Application Context
+            String fileContent = Utility.readTxtFile(getActivity(), lowerPath);
+
+            Timber.d("Loader finesh, show note with title: " + noteName);
+            mNoteTitleView.setText(noteName);
+            mNoteContentView.setText(fileContent);
+            //mNoteTitleView.setText("Hi HI hI debug");
+        }
     }
 
     @Override
@@ -114,17 +134,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
             ((View)vp).setVisibility(View.INVISIBLE);
         }*/
         return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null && data.moveToFirst()) {
-            String noteName = data.getString(data.getColumnIndex(NoteColumns.FILE_NAME));
-            noteName = Utility.stripDotTxtInString(noteName);
-            Timber.d("Loader finesh, show note with title: " + noteName);
-            mNoteTitleView.setText(noteName);
-            //mNoteTitleView.setText("Hi HI hI debug");
-        }
     }
 
     @Override
