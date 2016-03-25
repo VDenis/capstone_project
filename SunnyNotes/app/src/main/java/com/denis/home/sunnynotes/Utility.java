@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Created by Denis on 23.03.2016.
@@ -132,17 +133,24 @@ public class Utility {
     }
 
     public static String getUserLocale() {
-        return "en_US";
+        return Locale.getDefault().toString();
+        //return "en_US";
     }
 
     public static String getDropboxClientIdentifier() {
         // TODO change
+        // "examples-v2-demo"
         return "dropbox/java-tutorial";
+    }
+
+    public static String getSharedPreferencesName() {
+        return "sunny-notes";
     }
 
     public static String getDropboxAppRootFolder() {
         // TODO change
-        return "/python-test";
+        //return "/python-test";
+        return "";
     }
 
     public static String getLowerPathFromDB(Context context, Uri noteUri) {

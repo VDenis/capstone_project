@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.denis.home.sunnynotes.BuildConfig;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
+import com.denis.home.sunnynotes.dropbox.DropboxClientFactory;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.WriteMode;
@@ -55,8 +54,11 @@ public class ActionService extends IntentService {
         Uri noteUri = intent.getData();
 
 
-        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
-        client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);
+/*        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
+        client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);*/
+        client = DropboxClientFactory.getClient();
+        if (client == null)
+            return;
 
         // Get current account info
         FullAccount account = null;

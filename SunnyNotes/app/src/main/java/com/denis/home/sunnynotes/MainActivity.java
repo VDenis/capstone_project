@@ -18,7 +18,6 @@ import android.view.View;
 import com.denis.home.sunnynotes.noteDetail.NoteDetailActivity;
 import com.denis.home.sunnynotes.noteDetail.NoteDetailFragment;
 import com.denis.home.sunnynotes.noteList.NoteListFragment;
-import com.denis.home.sunnynotes.service.SunnyNotesService;
 import com.facebook.stetho.Stetho;
 
 public class MainActivity extends AppCompatActivity
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 
         Stetho.initializeWithDefaults(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         if (findViewById(R.id.note_detail_container) != null) {
@@ -51,7 +50,6 @@ public class MainActivity extends AppCompatActivity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             if (savedInstanceState == null) {
-                // TODO: change to real container
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.note_detail_container, new NoteDetailFragment(), DETAILFRAGMENT_TAG)
                         .commit();
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -121,13 +119,13 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        } else if (id == R.id.action_refresh) {
+        }
+/*        else if (id == R.id.action_refresh) {
             // Start Service
             //Timber.d("Start intent service");
-            Intent intent = new Intent(this, SunnyNotesService.class);
-            this.startService(intent);
+            SunnyNotesServiceHelper.Sync(this);
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+/*        if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -150,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

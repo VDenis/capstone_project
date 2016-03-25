@@ -9,12 +9,17 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_delete_note">Delete</string>
     <string name="action_save_note">Save</string>
+    <string name="action_share_note">Share</string>
+
+    <!-- Side menu -->
+    <string name="action_default_folder">Notes</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_note_detail">NoteDetailActivity</string>
+    <string name="title_activity_note_detail">Note Detail Activity</string>
 
     <!-- Hint -->
     <string name="note_content_hint">Enter text here</string>
     <string name="note_title_hint">Enter note title</string>
+
 </resources>

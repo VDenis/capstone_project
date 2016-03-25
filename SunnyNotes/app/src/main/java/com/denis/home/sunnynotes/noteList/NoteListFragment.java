@@ -1,6 +1,10 @@
 package com.denis.home.sunnynotes.noteList;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,31 +12,94 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.denis.home.sunnynotes.BuildConfig;
+import com.denis.home.sunnynotes.MainActivity;
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.data.NoteProvider;
+import com.denis.home.sunnynotes.dropbox.DropboxFragment;
+import com.denis.home.sunnynotes.service.SunnyNotesServiceHelper;
+import com.dropbox.core.android.Auth;
 
 import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NoteListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class NoteListFragment extends DropboxFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private RecyclerView mRecyclerView;
     //private int mPosition = RecyclerView.NO_POSITION;
     private NoteListAdapter mNoteListAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    android.support.v7.app.ActionBar mActionBar;
 
     private static final int CURSOR_LOADER_ID = 0;
 
     public NoteListFragment() {
         // Required empty public constructor
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (getActivity() instanceof MainActivity) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            inflater.inflate(R.menu.main, menu);
+            //finishCreatingMenu(menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            //TODO: crash
+/*            if (checkAuthState()) {
+                SunnyNotesServiceHelper.Sync(getActivity());
+                return true;
+            }*/
+            loadData();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void loadData() {
+        //runUpdate();
+    }
+
+    private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean newValue = intent.getBooleanExtra(SunnyNotesServiceHelper.Constants.EXTENDED_DATA_STATUS, false);
+            Timber.d("IsRefreshing change value to: " + newValue);
+            updateRefreshingUI(false);
+
+        }
+    };
+
+    private void updateRefreshingUI(boolean value) {
+        mSwipeRefreshLayout.setRefreshing(value);
+    }
+
+    @Override
+    protected void registrationInterruption() {
+        //Intent intent = new Intent(getActivity(), MainActivity.class);
+        //startActivity(intent);
     }
 
     /**
@@ -71,20 +138,59 @@ public class NoteListFragment extends Fragment implements LoaderManager.LoaderCa
 
         // Get a reference to the RecyclerView, and attach this adapter to it.
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_notes);
-
         // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         mRecyclerView.setAdapter(mNoteListAdapter);
+
+
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (mActionBar != null) {
+            mActionBar.setTitle(R.string.app_name);
+        }
+
+        // Callback
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                SunnyNotesServiceHelper.Constants.BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                mRefreshingReceiver,
+                mStatusIntentFilter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                runUpdate();
+            }
+        });
 
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        //checkAuthState();
+        runUpdate();
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
+
+    private void runUpdate() {
+        if (hasToken()) {
+            updateRefreshingUI(true);
+            SunnyNotesServiceHelper.Sync(getActivity());
+            Timber.d("Run SunnyNotesServiceHelper.Sync after user login");
+        } else {
+            Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
+        }
+    }
+
+/*    private boolean checkAuthState() {
+        if (!hasToken()) {
+            Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
+            return false;
+        }
+        return true;
+    }*/
 
     // since update database, when we create the loader, all we need to do is restart things
     void onLocationChanged() {
@@ -109,6 +215,7 @@ public class NoteListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mNoteListAdapter.swapCursor(data);
+        //mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

@@ -8,12 +8,11 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 
-import com.denis.home.sunnynotes.BuildConfig;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
 import com.denis.home.sunnynotes.data.NoteProvider;
+import com.denis.home.sunnynotes.dropbox.DropboxClientFactory;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
@@ -47,12 +46,16 @@ public class SunnyNotesService extends IntentService {
             mContext = this;
         }
 
-        Test();
+        Sync();
     }
 
-    private void Test() {
-        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
-        client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);
+    private void Sync() {
+/*        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
+        client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);*/
+
+        client = DropboxClientFactory.getClient();
+        if (client == null)
+            return;
 
         // Get current account info
         FullAccount account = null;
@@ -61,33 +64,42 @@ public class SunnyNotesService extends IntentService {
         } catch (DbxException e) {
             e.printStackTrace();
         }
-        Timber.d(account.getName().getDisplayName());
+        //Timber.d(account.getName().getDisplayName());
 
         // Get files and folder metadata from Dropbox root directory
         List<Metadata> entries = null;
         try {
             //entries = client.files.listFolder("").getEntries();
             // TODO App Folder
-            entries = client.files.listFolder("/python-test").getEntries();
+            //entries = client.files.listFolder("/python-test").getEntries();
+            entries = client.files.listFolder(Utility.getDropboxAppRootFolder()).getEntries();
         } catch (DbxException e) {
             e.printStackTrace();
         }
+
+        //SunnyNotesServiceHelper.sendRefreshStateCallback(this, true);
 
         Cursor initQueryCursor;
         initQueryCursor = mContext.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
                 new String[]{"Distinct " + NoteColumns.FILE_ID}, null,
                 null, null);
-        if (initQueryCursor == null || initQueryCursor.getCount() == 0) {
-
-        } else {
+        if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
             //DatabaseUtils.dumpCursor(initQueryCursor);
             //initQueryCursor.moveToFirst();
 
-            for (Metadata metadata : entries) {
-                if (metadata instanceof FileMetadata) {
-                    FileMetadata fileMetadata = (FileMetadata) metadata;
-                    if (deleteFile(fileMetadata)) {
-                        Timber.d("Delete file: " + metadata.getName());
+            ArrayList<String> mArrayList = new ArrayList<String>();
+            for(initQueryCursor.moveToFirst(); !initQueryCursor.isAfterLast(); initQueryCursor.moveToNext()) {
+                // The Cursor is now set to the right position
+                mArrayList.add(initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.FILE_ID)));
+            }
+
+            if (entries != null) {
+                for (Metadata metadata : entries) {
+                    if (metadata instanceof FileMetadata) {
+                        FileMetadata fileMetadata = (FileMetadata) metadata;
+                        if (deleteFile(fileMetadata)) {
+                            Timber.d("Delete file: " + metadata.getName());
+                        }
                     }
                 }
             }
@@ -122,7 +134,10 @@ public class SunnyNotesService extends IntentService {
             Timber.d("Insert new data into database");
         } catch (RemoteException | OperationApplicationException e) {
             e.printStackTrace();
+        } finally {
+            SunnyNotesServiceHelper.sendRefreshStateCallback(this, false);
         }
+
     }
 
     public ArrayList fileMetadataToContentVals(List<Metadata> entries) {
@@ -130,7 +145,8 @@ public class SunnyNotesService extends IntentService {
         for (Metadata metadata : entries) {
             if (metadata instanceof FileMetadata) {
                 FileMetadata fileMetadata = (FileMetadata) metadata;
-                if (downloadFile(fileMetadata)) {
+                String fileName = fileMetadata.getName();
+                if (fileName.endsWith(".txt") && downloadFile(fileMetadata)) {
                     Timber.d("Download file: " + metadata.getName());
                     batchOperations.add(buildBatchOperation(fileMetadata));
                 }

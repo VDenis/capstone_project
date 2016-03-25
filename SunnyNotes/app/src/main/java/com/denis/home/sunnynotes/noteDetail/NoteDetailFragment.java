@@ -1,6 +1,7 @@
 package com.denis.home.sunnynotes.noteDetail;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +37,14 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
     private static final int DETAIL_LOADER = 0;
 
+    private static final String SUNNY_NOTES_SHARE_HASHTAG = " #SunnyNotes";
+    private String mShareNote;
+
+
     private EditText mNoteTitleView;
     private EditText mNoteContentView;
     private boolean isAddMode = false;
+    private android.support.v7.app.ActionBar mActionBar;
 
     public NoteDetailFragment() {
         // Required empty public constructor
@@ -46,9 +53,8 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
     private void finishCreatingMenu(Menu menu) {
         // Retrieve the share menu item
-        // TODO: share
-/*        MenuItem menuItem = menu.findItem(R.id.action_share);
-        menuItem.setIntent(createShareForecastIntent());*/
+        MenuItem menuItem = menu.findItem(R.id.action_share_note);
+        menuItem.setIntent(createShareForecastIntent());
     }
 
     @Override
@@ -56,8 +62,16 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         if ( getActivity() instanceof NoteDetailActivity ){
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.detail, menu);
-            //finishCreatingMenu(menu);
+            finishCreatingMenu(menu);
         }
+    }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mShareNote + SUNNY_NOTES_SHARE_HASHTAG);
+        return shareIntent;
     }
 
     @Override
@@ -84,6 +98,9 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                 String filePath = Utility.createTxtFile(getActivity(), filename, content);
                 ActionServiceHelper.Add(getActivity(), filePath);
             }
+            return true;
+        } if (id == R.id.action_share_note) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -123,6 +140,9 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
         mNoteTitleView = (EditText) rootView.findViewById(R.id.note_title_edittext_view);
         mNoteContentView = (EditText) rootView.findViewById(R.id.note_content_edittext_view);
+
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
         return rootView;
     }
 
@@ -148,6 +168,12 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
             Timber.d("Loader finesh, show note with title: " + noteName);
             mNoteTitleView.setText(noteName);
             mNoteContentView.setText(fileContent);
+
+            mShareNote = String.format("%s:\n%s", noteName, fileContent);
+
+            if (mActionBar != null) {
+                mActionBar.setTitle(noteName);
+            }
             //mNoteTitleView.setText("Hi HI hI debug");
         }
     }
