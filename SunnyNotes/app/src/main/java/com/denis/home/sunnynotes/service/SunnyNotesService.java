@@ -129,8 +129,9 @@ public class SunnyNotesService extends IntentService {
 
 
         try {
-            mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
-                    fileMetadataToContentVals(entries));
+/*            mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
+                    fileMetadataToContentVals(entries));*/
+            fileMetadataToContentVals(entries);
             Timber.d("Insert new data into database");
         } catch (RemoteException | OperationApplicationException e) {
             e.printStackTrace();
@@ -140,7 +141,7 @@ public class SunnyNotesService extends IntentService {
 
     }
 
-    public ArrayList fileMetadataToContentVals(List<Metadata> entries) {
+    public ArrayList fileMetadataToContentVals(List<Metadata> entries) throws RemoteException, OperationApplicationException {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
         for (Metadata metadata : entries) {
             if (metadata instanceof FileMetadata) {
@@ -149,6 +150,9 @@ public class SunnyNotesService extends IntentService {
                 if (fileName.endsWith(".txt") && downloadFile(fileMetadata)) {
                     Timber.d("Download file: " + metadata.getName());
                     batchOperations.add(buildBatchOperation(fileMetadata));
+                    mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
+                            batchOperations);
+                    batchOperations.clear();
                 }
             }
             Timber.d(metadata.getPathLower());

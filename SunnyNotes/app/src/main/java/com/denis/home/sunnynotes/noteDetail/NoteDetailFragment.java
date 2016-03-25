@@ -99,8 +99,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                 ActionServiceHelper.Add(getActivity(), filePath);
             }
             return true;
-        } if (id == R.id.action_share_note) {
-
         }
 
         return super.onOptionsItemSelected(item);

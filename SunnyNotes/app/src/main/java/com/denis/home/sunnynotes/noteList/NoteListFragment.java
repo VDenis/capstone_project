@@ -45,6 +45,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     private NoteListAdapter mNoteListAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     android.support.v7.app.ActionBar mActionBar;
+    SwipeRefreshLayout.OnRefreshListener mSwipeRefreshListner;
 
     private static final int CURSOR_LOADER_ID = 0;
 
@@ -72,7 +73,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
                 SunnyNotesServiceHelper.Sync(getActivity());
                 return true;
             }*/
-            loadData();
+            runUpdate();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -156,12 +157,20 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
                 mStatusIntentFilter);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+        mSwipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 runUpdate();
             }
-        });
+        };
+/*        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                runUpdate();
+            }
+        });*/
+        mSwipeRefreshLayout.setOnRefreshListener(mSwipeRefreshListner);
 
         return rootView;
     }
@@ -169,7 +178,17 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         //checkAuthState();
-        runUpdate();
+
+        // It's seems to be a bug in SwipeRefreshLayout
+        //runUpdate();
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override public void run() {
+                // directly call onRefresh() method
+                mSwipeRefreshListner.onRefresh();
+            }
+        });
+
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
