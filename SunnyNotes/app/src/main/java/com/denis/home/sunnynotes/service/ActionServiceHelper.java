@@ -39,10 +39,11 @@ public class ActionServiceHelper {
     }
 
 
-    public static void Update(Context context, Uri noteUri) {
+    public static void Update(Context context, Uri noteUri, String titleName) {
         if (noteUri != null) {
             Intent serviceIntent = new Intent(context, ActionService.class);
             serviceIntent.putExtra(ActionService.OPERATION, ActionService.OPERATION_UPDATE);
+            serviceIntent.putExtra(ActionService.OPERATION_UPDATE_NEW_FILE_NAME, titleName + ".txt");
             serviceIntent.setData(noteUri);
             context.startService(serviceIntent);
         }

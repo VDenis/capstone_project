@@ -89,9 +89,10 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         } else if (id == R.id.action_save_note) {
             if (mUri != null) {
                 // TODO: validation
+                String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
                 Utility.updateTxtFile(getActivity(), mUri, content);
-                ActionServiceHelper.Update(getActivity(), mUri);
+                ActionServiceHelper.Update(getActivity(), mUri,filename);
             } else {
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();

@@ -87,6 +87,17 @@ public class Utility {
         return result;
     }
 
+    public static boolean moveTxtFile(Context context, Uri noteUri, String newPath) {
+        boolean isRename = false;
+        String relativePath = getLowerPathFromDB(context, noteUri);
+
+        File path = context.getFilesDir();
+        File fileFrom = new File(path + relativePath);
+        File fileTo = new File(path + newPath);
+        isRename = fileFrom.renameTo(fileTo);
+        return isRename;
+    }
+
     public static boolean deleteTxtFile(Context context, Uri noteUri) {
         boolean isDelete = false;
         String relativePath = getLowerPathFromDB(context, noteUri);

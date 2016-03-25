@@ -181,7 +181,6 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
 
         // It's seems to be a bug in SwipeRefreshLayout
         //runUpdate();
-
         mSwipeRefreshLayout.post(new Runnable() {
             @Override public void run() {
                 // directly call onRefresh() method

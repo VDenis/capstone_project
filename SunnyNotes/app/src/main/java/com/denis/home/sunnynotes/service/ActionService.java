@@ -34,6 +34,7 @@ public class ActionService extends IntentService {
 
     public final static String OPERATION_DELETE = "OPERATION_DELETE";
     public final static String OPERATION_UPDATE = "OPERATION_UPDATE";
+    public final static String OPERATION_UPDATE_NEW_FILE_NAME = "OPERATION_UPDATE_NEW_FILE_NAME";
 
     private Context mContext;
     DbxClientV2 client;
@@ -51,6 +52,7 @@ public class ActionService extends IntentService {
 
         String requestOperation = intent.getStringExtra(OPERATION);
         String lowerFilePath = intent.getStringExtra(OPERATION_ADD_LOWER_FILE_PATH);
+        String newFileName = intent.getStringExtra(OPERATION_UPDATE_NEW_FILE_NAME);
         Uri noteUri = intent.getData();
 
 
@@ -97,7 +99,8 @@ public class ActionService extends IntentService {
                                 Utility.deleteNoteInDB(mContext, noteUri);
                                 break;
                             case OPERATION_UPDATE:
-                                FileMetadata fileMetadata = uploadFileToDropbox(serverLowerPath);
+                                FileMetadata fileMetadata = uploadFileToDropbox(serverLowerPath, newFileName);
+                                Utility.moveTxtFile(mContext, noteUri, fileMetadata.getPathLower());
                                 Utility.updateNoteInDB(mContext, noteUri, fileMetadata);
                                 break;
                             default:
@@ -111,6 +114,10 @@ public class ActionService extends IntentService {
     }
 
     private FileMetadata uploadFileToDropbox(String serverLowerPath) {
+        return uploadFileToDropbox(serverLowerPath, "");
+    }
+
+    private FileMetadata uploadFileToDropbox(String serverLowerPath, String newFileName) {
         FileMetadata fileMetadata = null;
         File appDir = getFilesDir();
         File file = new File(appDir + serverLowerPath);
@@ -129,6 +136,17 @@ public class ActionService extends IntentService {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        }
+
+        if (!newFileName.isEmpty()) {
+            if (fileMetadata != null && !newFileName.equals(fileMetadata.getName())) {
+                String newFilePath = fileMetadata.getPathLower().replace(fileMetadata.getName(), newFileName);
+                try {
+                    fileMetadata = (FileMetadata) client.files.move(fileMetadata.getPathLower(), newFilePath);
+                } catch (DbxException e) {
+                    e.printStackTrace();
                 }
             }
         }
