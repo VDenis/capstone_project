@@ -227,14 +227,6 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         }
     }
 
-/*    private boolean checkAuthState() {
-        if (!hasToken()) {
-            Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
-            return false;
-        }
-        return true;
-    }*/
-
     // since update database, when we create the loader, all we need to do is restart things
     void onLocationChanged() {
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);

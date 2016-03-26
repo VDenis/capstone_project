@@ -23,8 +23,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!--<include layout="@layout/content_main"/>-->
-
     <fragment
         android:id="@+id/fragment_note_list"
         android:name="com.denis.home.sunnynotes.noteList.NoteListFragment"

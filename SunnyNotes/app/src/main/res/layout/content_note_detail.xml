@@ -15,10 +15,4 @@
     tools:context="com.denis.home.sunnynotes.noteDetail.NoteDetailActivity"
     tools:layout="@layout/fragment_note_detail">
 
-
-    <!--    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hi hi hih"
-            android:layout_gravity="left|center_vertical"/>-->
 </FrameLayout>

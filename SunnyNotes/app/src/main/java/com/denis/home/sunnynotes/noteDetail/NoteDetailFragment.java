@@ -254,10 +254,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                     null
             );
         }
-/*        ViewParent vp = getView().getParent();
-        if ( vp instanceof CardView ) {
-            ((View)vp).setVisibility(View.INVISIBLE);
-        }*/
         return null;
     }
 

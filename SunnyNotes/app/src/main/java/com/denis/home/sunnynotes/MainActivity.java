@@ -62,20 +62,6 @@ public class MainActivity extends AppCompatActivity
             mTwoPane = false;
         }
 
-/*        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-
-        mCursorAdapter = new QuoteCursorAdapter(this, null);
-        recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
-                new RecyclerViewItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View v, int position) {
-                        // do something on item click
-                    }
-                }));
-        recyclerView.setAdapter(mCursorAdapter);*/
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,12 +126,6 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             return true;
         }
-/*        else if (id == R.id.action_refresh) {
-            // Start Service
-            //Timber.d("Start intent service");
-            SunnyNotesServiceHelper.Sync(this);
-            return true;
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -160,20 +140,6 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
-
-/*        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
