@@ -14,20 +14,20 @@
             android:id="@+id/note_title_edittext_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:inputType="text"
             android:ellipsize="end"
-            android:maxLength="64"
-            android:textSize="@dimen/note_title_textsize"
             android:hint="@string/note_title_hint"
+            android:inputType="text"
+            android:maxLength="64"
+            android:maxLines="1"
+            android:textSize="@dimen/note_title_textsize"
             tools:text="Test note title Test note title Test note title"/>
 
         <EditText
             android:id="@+id/note_content_edittext_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/note_content_textsize"
             android:hint="@string/note_content_hint"
+            android:textSize="@dimen/note_content_textsize"
             tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>
 
     </LinearLayout>

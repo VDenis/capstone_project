@@ -22,7 +22,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_note_detail"
+    <include
+        layout="@layout/content_note_detail"
         tools:layout="@layout/fragment_note_detail"/>
 
 </android.support.design.widget.CoordinatorLayout>

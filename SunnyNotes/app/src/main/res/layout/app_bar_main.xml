@@ -28,10 +28,10 @@
         android:name="com.denis.home.sunnynotes.noteList.NoteListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:layout="@layout/fragment_note_list"/>
 
@@ -40,11 +40,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:contentDescription="@string/a11n_add_note"
+        android:layout_marginBottom="@dimen/admob_height"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginStart="@dimen/fab_margin"
         android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/admob_height"
+        android:contentDescription="@string/a11n_add_note"
         app:srcCompat="@drawable/ic_plus"/>
 
 </android.support.design.widget.CoordinatorLayout>

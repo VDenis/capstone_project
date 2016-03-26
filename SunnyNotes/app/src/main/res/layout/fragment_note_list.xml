@@ -7,8 +7,8 @@
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/AdView"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         app:adSize="BANNER"
         app:adUnitId="@string/banner_ad_unit_id"
