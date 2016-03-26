@@ -19,10 +19,14 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteLi
 
     private static final int VIEW_TYPE_STANDARD = 0;
     //private static final int VIEW_TYPE_FAVORITE = 1;
-
-    private Cursor mCursor;
     final private Context mContext;
     final private NoteListAdapterOnClickHandler mClickHandler;
+    private Cursor mCursor;
+
+    public NoteListAdapter(Context context, NoteListAdapterOnClickHandler dh) {
+        mContext = context;
+        mClickHandler = dh;
+    }
 
     @Override
     public NoteListAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -66,6 +70,10 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteLi
         return mCursor;
     }
 
+    public static interface NoteListAdapterOnClickHandler {
+        void onClick(int noteId, NoteListAdapterViewHolder vh);
+    }
+
     /**
      * Cache of the children views for a forecast list item.
      */
@@ -85,14 +93,5 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.NoteLi
             int noteIdColumnIndex = mCursor.getColumnIndex(NoteColumns._ID);
             mClickHandler.onClick(mCursor.getInt(noteIdColumnIndex), this);
         }
-    }
-
-    public static interface NoteListAdapterOnClickHandler {
-        void onClick(int noteId, NoteListAdapterViewHolder vh);
-    }
-
-    public NoteListAdapter(Context context, NoteListAdapterOnClickHandler dh) {
-        mContext = context;
-        mClickHandler = dh;
     }
 }

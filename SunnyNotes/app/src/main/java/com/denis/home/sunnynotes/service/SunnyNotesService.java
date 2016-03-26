@@ -32,8 +32,8 @@ import timber.log.Timber;
  */
 public class SunnyNotesService extends IntentService {
 
-    private Context mContext;
     DbxClientV2 client;
+    private Context mContext;
 
     public SunnyNotesService() {
         super(SunnyNotesService.class.getSimpleName());
@@ -88,7 +88,7 @@ public class SunnyNotesService extends IntentService {
             //initQueryCursor.moveToFirst();
 
             ArrayList<String> mArrayList = new ArrayList<String>();
-            for(initQueryCursor.moveToFirst(); !initQueryCursor.isAfterLast(); initQueryCursor.moveToNext()) {
+            for (initQueryCursor.moveToFirst(); !initQueryCursor.isAfterLast(); initQueryCursor.moveToNext()) {
                 // The Cursor is now set to the right position
                 mArrayList.add(initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.FILE_ID)));
             }

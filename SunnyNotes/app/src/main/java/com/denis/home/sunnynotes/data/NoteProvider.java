@@ -16,20 +16,20 @@ public class NoteProvider {
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    interface Path{
-        String NOTES = "notes";
-    }
-
-    private static Uri buildUri(String... paths){
+    private static Uri buildUri(String... paths) {
         Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
-        for (String path:paths){
+        for (String path : paths) {
             builder.appendPath(path);
         }
         return builder.build();
     }
 
+    interface Path {
+        String NOTES = "notes";
+    }
+
     @TableEndpoint(table = NoteDatabase.Notes)
-    public static class Notes{
+    public static class Notes {
         @ContentUri(
                 path = Path.NOTES,
                 type = "vnd.android.cursor.dir/note"
@@ -43,7 +43,7 @@ public class NoteProvider {
                 whereColumn = NoteColumns._ID, // TODO _id or file id
                 pathSegment = 1
         )
-        public static Uri withId(int id){
+        public static Uri withId(int id) {
             return buildUri(Path.NOTES, Integer.toString(id));
         }
     }

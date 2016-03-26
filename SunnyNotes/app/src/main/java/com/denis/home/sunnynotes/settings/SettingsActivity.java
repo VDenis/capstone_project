@@ -183,6 +183,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName);
     }
 
+    // Parent activity in manifest didn't work, use on R.id.home button pressed
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     /**
      * This fragment shows data and sync preferences only. It is used when the
@@ -215,7 +233,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if ( key.equals(getString(R.string.pref_sync_key)) ) {
+            if (key.equals(getString(R.string.pref_sync_key))) {
                 Boolean isSync = sharedPreferences.getBoolean(key, Boolean.valueOf(getString(R.string.pref_sync_default)));
                 if (!isSync) {
                     Utility.deleteUserAccount(getActivity());
@@ -254,25 +272,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
             super.onPause();
         }
-    }
-
-
-    // Parent activity in manifest didn't work, use on R.id.home button pressed
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
 }

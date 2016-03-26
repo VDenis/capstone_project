@@ -43,15 +43,23 @@ import timber.log.Timber;
  */
 public class NoteListFragment extends DropboxFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int CURSOR_LOADER_ID = 0;
+    android.support.v7.app.ActionBar mActionBar;
+    SwipeRefreshLayout.OnRefreshListener mSwipeRefreshListner;
     private RecyclerView mRecyclerView;
     //private int mPosition = RecyclerView.NO_POSITION;
     private NoteListAdapter mNoteListAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    android.support.v7.app.ActionBar mActionBar;
-    SwipeRefreshLayout.OnRefreshListener mSwipeRefreshListner;
-
-    private static final int CURSOR_LOADER_ID = 0;
     private boolean mFirstLaunch = false;
+    private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean newValue = intent.getBooleanExtra(SunnyNotesServiceHelper.Constants.EXTENDED_DATA_STATUS, false);
+            Timber.d("IsRefreshing change value to: " + newValue);
+            updateRefreshingUI(false);
+
+        }
+    };
 
     public NoteListFragment() {
         // Required empty public constructor
@@ -89,16 +97,6 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         }
     }
 
-    private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean newValue = intent.getBooleanExtra(SunnyNotesServiceHelper.Constants.EXTENDED_DATA_STATUS, false);
-            Timber.d("IsRefreshing change value to: " + newValue);
-            updateRefreshingUI(false);
-
-        }
-    };
-
     private void updateRefreshingUI(boolean value) {
         mSwipeRefreshLayout.setRefreshing(value);
     }
@@ -107,18 +105,6 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     protected void registrationInterruption() {
         //Intent intent = new Intent(getActivity(), MainActivity.class);
         //startActivity(intent);
-    }
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        public void onItemSelected(Uri noteIdUri);
     }
 
     @Override
@@ -197,7 +183,8 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         // It's seems to be a bug in SwipeRefreshLayout
         //runUpdate();
         mSwipeRefreshLayout.post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 // directly call onRefresh() method
                 mSwipeRefreshListner.onRefresh();
             }
@@ -257,5 +244,17 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mNoteListAdapter.swapCursor(null);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri noteIdUri);
     }
 }

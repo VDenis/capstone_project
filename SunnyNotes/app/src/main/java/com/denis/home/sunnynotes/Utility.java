@@ -241,10 +241,10 @@ public class Utility {
                 NoteColumns.FILE_NAME + "=?", new String[]{filename},
                 null);*/
 
-            initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
-                    new String[]{"Distinct " + NoteColumns.FILE_NAME, NoteColumns._ID},
-                    NoteColumns.FILE_NAME + "=?", new String[]{filename},
-                    null);
+        initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+                new String[]{"Distinct " + NoteColumns.FILE_NAME, NoteColumns._ID},
+                NoteColumns.FILE_NAME + "=?", new String[]{filename},
+                null);
         try {
             if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
                 initQueryCursor.moveToNext();

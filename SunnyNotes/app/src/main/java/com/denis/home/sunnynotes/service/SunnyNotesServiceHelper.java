@@ -14,15 +14,6 @@ public class SunnyNotesServiceHelper {
         context.startService(intent);
     }
 
-    public final class Constants {
-        // Defines a custom Intent action
-        public static final String BROADCAST_ACTION =
-                "com.denis.home.sunnynotes.service.sunnynotes.BROADCAST";
-        // Defines the key for the status "extra" in an Intent
-        public static final String EXTENDED_DATA_STATUS =
-                "com.denis.home.sunnynotes.service.sunnynotes.STATUS";
-    }
-
     static void sendRefreshStateCallback(Context context, boolean status) {
         Intent localIntent;
 
@@ -33,5 +24,14 @@ public class SunnyNotesServiceHelper {
 
         // Broadcasts the Intent to receivers in this app.
         LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent);
+    }
+
+    public final class Constants {
+        // Defines a custom Intent action
+        public static final String BROADCAST_ACTION =
+                "com.denis.home.sunnynotes.service.sunnynotes.BROADCAST";
+        // Defines the key for the status "extra" in an Intent
+        public static final String EXTENDED_DATA_STATUS =
+                "com.denis.home.sunnynotes.service.sunnynotes.STATUS";
     }
 }

@@ -1,4 +1,5 @@
 package com.denis.home.sunnynotes.dropbox;
+
 import com.denis.home.sunnynotes.Utility;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.http.OkHttpRequestor;
@@ -8,6 +9,7 @@ import com.dropbox.core.v2.DbxClientV2;
  * Created by Denis on 25.03.2016.
  */
 /*  From com.dropbox.core.examples.android; */
+
 /**
  * Singleton instance of {@link DbxClientV2} and friends
  */

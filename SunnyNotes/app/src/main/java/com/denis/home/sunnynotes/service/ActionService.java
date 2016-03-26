@@ -35,9 +35,8 @@ public class ActionService extends IntentService {
     public final static String OPERATION_DELETE = "OPERATION_DELETE";
     public final static String OPERATION_UPDATE = "OPERATION_UPDATE";
     public final static String OPERATION_UPDATE_NEW_FILE_NAME = "OPERATION_UPDATE_NEW_FILE_NAME";
-
-    private Context mContext;
     DbxClientV2 client;
+    private Context mContext;
 
     public ActionService() {
         super(ActionService.class.getSimpleName());

@@ -37,11 +37,9 @@ import timber.log.Timber;
 public class NoteDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String DETAIL_URI = "URI";
-    private Uri mUri;
-
     private static final int DETAIL_LOADER = 0;
-
     private static final String SUNNY_NOTES_SHARE_HASHTAG = " #SunnyNotes";
+    private Uri mUri;
     private String mShareNote;
 
 
@@ -54,6 +52,21 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     public NoteDetailFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param noteUri content uri .
+     * @return A new instance of fragment NoteDetailFragment.
+     */
+    public static NoteDetailFragment newInstance(Uri noteUri) {
+        NoteDetailFragment fragment = new NoteDetailFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(DETAIL_URI, noteUri);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private void finishCreatingMenu(Menu menu) {
@@ -156,21 +169,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param noteUri content uri .
-     * @return A new instance of fragment NoteDetailFragment.
-     */
-    public static NoteDetailFragment newInstance(Uri noteUri) {
-        NoteDetailFragment fragment = new NoteDetailFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(DETAIL_URI, noteUri);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
