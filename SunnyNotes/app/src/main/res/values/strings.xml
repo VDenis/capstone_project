@@ -58,4 +58,10 @@
     <!-- Ads test-->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="ad_mob_test_device">D054F2A9AC5333AED3F4EAB885A8D612</string>
+
+    <!-- Analytics -->
+    <string name="analytics_settings_page" translatable="false">Settings screen</string>
+    <string name="analytics_main_page" translatable="false">Main screen</string>
+    <string name="analytics_note_detail_page" translatable="false">Note detail screen</string>
+    <string name="analytics_create_new_note">Create new note</string>
 </resources>

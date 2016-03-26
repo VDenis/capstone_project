@@ -20,6 +20,8 @@ import com.denis.home.sunnynotes.noteDetail.NoteDetailFragment;
 import com.denis.home.sunnynotes.noteList.NoteListFragment;
 import com.denis.home.sunnynotes.settings.SettingsActivity;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NoteListFragment.Callback {
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     private boolean mTwoPane;
+    private Tracker mTracker;
 
 /*    private QuoteCursorAdapter mCursorAdapter;*/
 
@@ -79,6 +82,10 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
 /*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction(getString(R.string.analytics_create_new_note))
+                        .build());
                 NavigateToDetailView(null);
             }
         });
@@ -91,6 +98,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        CustomApplication application = (CustomApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+    }
+
+    @Override
+    protected void onResume() {
+        mTracker.setScreenName(getString(R.string.analytics_main_page));
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
     }
 
     @Override
@@ -169,6 +186,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void NavigateToDetailView(Uri noteUri) {
+
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a

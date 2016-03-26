@@ -99,3 +99,6 @@ crashlytics-build.properties
 .DS_Store
 /build
 /captures
+
+# Additional ignore google-services.json
+google-services.json

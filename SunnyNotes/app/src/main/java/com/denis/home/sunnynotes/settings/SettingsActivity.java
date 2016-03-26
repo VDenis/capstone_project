@@ -24,11 +24,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.denis.home.sunnynotes.BuildConfig;
+import com.denis.home.sunnynotes.CustomApplication;
 import com.denis.home.sunnynotes.MainActivity;
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.dropbox.DropboxPreferenceFragment;
 import com.dropbox.core.android.Auth;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.List;
 
@@ -130,6 +133,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+
+        CustomApplication application = (CustomApplication) getApplication();
+        Tracker mTracker = application.getDefaultTracker();
+        mTracker.setScreenName(getString(R.string.analytics_settings_page));
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     /**

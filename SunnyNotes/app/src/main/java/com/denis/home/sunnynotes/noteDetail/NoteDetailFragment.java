@@ -19,10 +19,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.denis.home.sunnynotes.CustomApplication;
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
 import com.denis.home.sunnynotes.service.ActionServiceHelper;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import timber.log.Timber;
 
@@ -46,6 +49,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     private EditText mNoteContentView;
     private boolean isAddMode = false;
     private android.support.v7.app.ActionBar mActionBar;
+    private Tracker mTracker;
 
     public NoteDetailFragment() {
         // Required empty public constructor
@@ -181,6 +185,13 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
+    public void onResume() {
+        mTracker.setScreenName(getString(R.string.analytics_note_detail_page));
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -199,6 +210,9 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         if (!isAddMode) {
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         }
+
+        CustomApplication application = (CustomApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
         super.onActivityCreated(savedInstanceState);
     }
 
