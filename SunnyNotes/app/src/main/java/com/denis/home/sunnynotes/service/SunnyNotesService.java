@@ -70,7 +70,6 @@ public class SunnyNotesService extends IntentService {
         List<Metadata> entries = null;
         try {
             //entries = client.files.listFolder("").getEntries();
-            // TODO App Folder
             //entries = client.files.listFolder("/python-test").getEntries();
             entries = client.files.listFolder(Utility.getDropboxAppRootFolder()).getEntries();
         } catch (DbxException e) {
@@ -218,7 +217,7 @@ public class SunnyNotesService extends IntentService {
         File file = new File(path + serverLowerPath);
 
         // Make sure the Downloads directory exists.
-        if (!file.exists()) { // TODO or if (file != null) {
+        if (!file.exists()) {
             return isDelete;
         } else {
             if (file.delete()) {

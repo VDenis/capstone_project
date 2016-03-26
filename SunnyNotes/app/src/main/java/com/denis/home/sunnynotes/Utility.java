@@ -189,7 +189,6 @@ public class Utility {
     }
 
     public static String getDropboxClientIdentifier() {
-        // TODO change
         // "examples-v2-demo"
         return "dropbox/java-tutorial";
     }
@@ -199,7 +198,6 @@ public class Utility {
     }
 
     public static String getDropboxAppRootFolder() {
-        // TODO change
         //return "/python-test";
         return "";
     }

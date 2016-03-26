@@ -40,7 +40,7 @@ public class NoteProvider {
                 name = "NOTE_ID",
                 path = Path.NOTES + "/*",
                 type = "vnd.android.cursor.item/note",
-                whereColumn = NoteColumns._ID, // TODO _id or file id
+                whereColumn = NoteColumns._ID,
                 pathSegment = 1
         )
         public static Uri withId(int id) {

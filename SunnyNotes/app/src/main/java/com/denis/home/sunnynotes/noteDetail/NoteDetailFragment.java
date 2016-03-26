@@ -119,7 +119,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
             return true;
         } else if (id == R.id.action_save_note) {
             if (mUri != null) {
-                // TODO: validation
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
 
@@ -222,7 +221,6 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
             String lowerPath = data.getString(data.getColumnIndex(NoteColumns.LOWER_PATH));
 
-            // TODO: getActivity? or Application Context
             String fileContent = Utility.readTxtFile(getActivity(), lowerPath);
 
             Timber.d("Loader finesh, show note with title: " + noteName);

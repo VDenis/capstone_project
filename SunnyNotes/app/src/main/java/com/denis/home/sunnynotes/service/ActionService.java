@@ -103,7 +103,6 @@ public class ActionService extends IntentService {
                                 Utility.updateNoteInDB(mContext, noteUri, fileMetadata);
                                 break;
                             default:
-                                // TODO: trow exeption
                                 throw new IllegalArgumentException();
                         }
                     }
@@ -121,7 +120,7 @@ public class ActionService extends IntentService {
         File appDir = getFilesDir();
         File file = new File(appDir + serverLowerPath);
 
-        if (file.exists()) { // TODO or if (file != null) {
+        if (file.exists()) {
             InputStream in = null;
             try {
                 in = new FileInputStream(file);

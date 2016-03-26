@@ -80,7 +80,6 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            //TODO: crash
 /*            if (checkAuthState()) {
                 SunnyNotesServiceHelper.Sync(getActivity());
                 return true;
@@ -117,10 +116,8 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
             @Override
             public void onClick(int noteId, NoteListAdapter.NoteListAdapterViewHolder vh) {
                 int position = vh.getAdapterPosition();
-                // ToDO: id or file id
                 ((Callback) getActivity())
                         .onItemSelected(NoteProvider.Notes.withId(noteId));
-                //TODO: delete debug toast
                 String text = "Click on note, id: " + noteId + ", position: " + position;
 /*                Toast.makeText(getActivity(),
                         text,
