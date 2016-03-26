@@ -102,7 +102,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                 String content = mNoteContentView.getText().toString();
 
                 if (Utility.isValidNoteTitle(filename)) {
-                    if (!Utility.getNoteIdIfExist(getActivity(), filename)) {
+                    if (!Utility.getNoteIdIfExist(getActivity(), filename, mUri)) {
                         // Check internet
                         if (Utility.isNetworkAvailable(getActivity())) {
                             Utility.updateTxtFile(getActivity(), mUri, content);
@@ -122,18 +122,22 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
             } else {
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
-                // Check internet
                 if (Utility.isValidNoteTitle(filename)) {
-                    if (Utility.isNetworkAvailable(getActivity())) {
-                        filename = mNoteTitleView.getText().toString();
-                        content = mNoteContentView.getText().toString();
-                        String filePath = Utility.createTxtFile(getActivity(), filename, content);
-                        ActionServiceHelper.Add(getActivity(), filePath);
+                    if (!Utility.getNoteIdIfExist(getActivity(), filename)) {
+                        // Check internet
+                        if (Utility.isNetworkAvailable(getActivity())) {
+                            filename = mNoteTitleView.getText().toString();
+                            content = mNoteContentView.getText().toString();
+                            String filePath = Utility.createTxtFile(getActivity(), filename, content);
+                            ActionServiceHelper.Add(getActivity(), filePath);
+                        } else {
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.empty_note_list_no_network),
+                                    Toast.LENGTH_SHORT).
+                                    show();
+                        }
                     } else {
-                        Toast.makeText(getActivity(),
-                                getString(R.string.empty_note_list_no_network),
-                                Toast.LENGTH_SHORT).
-                                show();
+                        mNoteTitleView.setError(getString(R.string.error_note_exist));
                     }
                 } else {
                     mNoteTitleView.setError(getString(R.string.error_invalid_note_title));

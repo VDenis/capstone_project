@@ -229,15 +229,35 @@ public class Utility {
     }
 
     public static boolean getNoteIdIfExist(Context context, String noteTitle) {
+        return getNoteIdIfExist(context, noteTitle, null);
+    }
+
+    public static boolean getNoteIdIfExist(Context context, String noteTitle, Uri noteUri) {
         boolean result = false;
         String filename = noteTitle + ".txt";
         Cursor initQueryCursor;
-        initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+/*        initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
                 new String[]{"Distinct " + NoteColumns.FILE_NAME},
                 NoteColumns.FILE_NAME + "=?", new String[]{filename},
-                null);
-        if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
-            result = true;
+                null);*/
+
+            initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+                    new String[]{"Distinct " + NoteColumns.FILE_NAME, NoteColumns._ID},
+                    NoteColumns.FILE_NAME + "=?", new String[]{filename},
+                    null);
+        try {
+            if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
+                initQueryCursor.moveToNext();
+                int id = initQueryCursor.getInt(initQueryCursor.getColumnIndex(NoteColumns._ID));
+                if (noteUri != null && NoteProvider.Notes.withId(id).equals(noteUri)) {
+                    result = false;
+                } else {
+                    result = true;
+                }
+            }
+        } finally {
+            if (initQueryCursor != null)
+                initQueryCursor.close();
         }
         return result;
     }
