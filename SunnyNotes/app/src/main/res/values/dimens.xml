@@ -9,4 +9,5 @@
     <dimen name="note_text_size">32sp</dimen>
     <dimen name="note_title_textsize">34sp</dimen>
     <dimen name="note_content_textsize">20sp</dimen>
+    <dimen name="admob_height">55dp</dimen>
 </resources>

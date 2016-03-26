@@ -54,4 +54,8 @@
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
+
+    <!-- Ads test-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_mob_test_device">D054F2A9AC5333AED3F4EAB885A8D612</string>
 </resources>

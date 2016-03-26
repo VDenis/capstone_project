@@ -33,6 +33,8 @@ import com.denis.home.sunnynotes.data.NoteProvider;
 import com.denis.home.sunnynotes.dropbox.DropboxFragment;
 import com.denis.home.sunnynotes.service.SunnyNotesServiceHelper;
 import com.dropbox.core.android.Auth;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import timber.log.Timber;
 
@@ -175,6 +177,15 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
             }
         });*/
         mSwipeRefreshLayout.setOnRefreshListener(mSwipeRefreshListner);
+
+
+        // Ads
+        AdView adView = (AdView) rootView.findViewById(R.id.AdView);
+        AdRequest adRequest = new AdRequest.Builder().
+                addTestDevice(AdRequest.DEVICE_ID_EMULATOR).
+                addTestDevice(getActivity().getString(R.string.ad_mob_test_device)).
+                build();
+        adView.loadAd(adRequest);
 
         return rootView;
     }

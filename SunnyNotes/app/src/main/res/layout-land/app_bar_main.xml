@@ -43,10 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:contentDescription="@string/a11n_add_note"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginStart="@dimen/fab_margin"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/admob_height"
+        android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_plus"/>
 
 </android.support.design.widget.CoordinatorLayout>
