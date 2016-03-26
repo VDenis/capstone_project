@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
+            android:contentDescription="@string/a11n_note_title"
             android:gravity="start"
             android:textSize="@dimen/note_text_size"
             android:maxLines="1"

@@ -19,7 +19,6 @@
             android:layout_height="match_parent"
             tools:listitem="@layout/list_item_note"
             />
-
     </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>
 

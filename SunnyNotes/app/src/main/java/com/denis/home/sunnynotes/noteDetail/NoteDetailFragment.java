@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
@@ -59,7 +60,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if ( getActivity() instanceof NoteDetailActivity ){
+        if (getActivity() instanceof NoteDetailActivity) {
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.detail, menu);
             finishCreatingMenu(menu);
@@ -80,10 +81,18 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
         if (id == R.id.action_delete_note) {
             if (mUri != null) {
-                Utility.deleteTxtFile(getActivity(), mUri);
-                ActionServiceHelper.Delete(getActivity(), mUri);
+                // Check internet
+                if (Utility.isNetworkAvailable(getActivity())) {
+                    Utility.deleteTxtFile(getActivity(), mUri);
+                    ActionServiceHelper.Delete(getActivity(), mUri);
 
-                getActivity().finish();
+                    getActivity().finish();
+                } else {
+                    Toast.makeText(getActivity(),
+                            getString(R.string.empty_note_list_no_network),
+                            Toast.LENGTH_SHORT).
+                            show();
+                }
             }
             return true;
         } else if (id == R.id.action_save_note) {
@@ -91,13 +100,38 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                 // TODO: validation
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
-                Utility.updateTxtFile(getActivity(), mUri, content);
-                ActionServiceHelper.Update(getActivity(), mUri,filename);
+
+                if (Utility.isValidNoteTitle(filename)) {
+                    if (!Utility.getNoteIdIfExist(getActivity(), filename)) {
+                        // Check internet
+                        if (Utility.isNetworkAvailable(getActivity())) {
+                            Utility.updateTxtFile(getActivity(), mUri, content);
+                            ActionServiceHelper.Update(getActivity(), mUri, filename);
+                        } else {
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.empty_note_list_no_network),
+                                    Toast.LENGTH_SHORT).
+                                    show();
+                        }
+                    } else {
+                        mNoteTitleView.setError(getString(R.string.error_note_exist));
+                    }
+                } else {
+                    mNoteTitleView.setError(getString(R.string.error_invalid_note_title));
+                }
             } else {
-                String filename = mNoteTitleView.getText().toString();
-                String content = mNoteContentView.getText().toString();
-                String filePath = Utility.createTxtFile(getActivity(), filename, content);
-                ActionServiceHelper.Add(getActivity(), filePath);
+                // Check internet
+                if (Utility.isNetworkAvailable(getActivity())) {
+                    String filename = mNoteTitleView.getText().toString();
+                    String content = mNoteContentView.getText().toString();
+                    String filePath = Utility.createTxtFile(getActivity(), filename, content);
+                    ActionServiceHelper.Add(getActivity(), filePath);
+                } else {
+                    Toast.makeText(getActivity(),
+                            getString(R.string.empty_note_list_no_network),
+                            Toast.LENGTH_SHORT).
+                            show();
+                }
             }
             return true;
         }

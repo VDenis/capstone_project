@@ -22,4 +22,19 @@
     <string name="note_content_hint">Enter text here</string>
     <string name="note_title_hint">Enter note title</string>
 
+    <!-- Error -->
+    <string name="error_invalid_note_title">Use numbers and english letters</string>
+    <string name="error_note_exist">This note already exist, choose another name</string>
+
+    <string name="empty_note_list">No Notes</string>
+    <string name="empty_note_list_no_network">No notes( The network is not available to fetch notes. Turn on and try again)</string>
+
+    <!-- a11n -->
+    <string name="a11n_note_title">Note title</string>
+    <string name="a11n_note_content">Note content</string>
+    <string name="a11n_add_note">Create a new note</string>
+
+
+
+
 </resources>

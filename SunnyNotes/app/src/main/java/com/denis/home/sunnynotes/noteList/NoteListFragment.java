@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.denis.home.sunnynotes.BuildConfig;
 import com.denis.home.sunnynotes.MainActivity;
 import com.denis.home.sunnynotes.R;
+import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteProvider;
 import com.denis.home.sunnynotes.dropbox.DropboxFragment;
 import com.denis.home.sunnynotes.service.SunnyNotesServiceHelper;
@@ -48,6 +49,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     SwipeRefreshLayout.OnRefreshListener mSwipeRefreshListner;
 
     private static final int CURSOR_LOADER_ID = 0;
+    private boolean mFirstLaunch = false;
 
     public NoteListFragment() {
         // Required empty public constructor
@@ -80,7 +82,9 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
 
     @Override
     protected void loadData() {
-        //runUpdate();
+        if (mFirstLaunch) {
+            runUpdate();
+        }
     }
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
@@ -130,9 +134,9 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
                         .onItemSelected(NoteProvider.Notes.withId(noteId));
                 //TODO: delete debug toast
                 String text = "Click on note, id: " + noteId + ", position: " + position;
-                Toast.makeText(getActivity(),
+/*                Toast.makeText(getActivity(),
                         text,
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
                 Timber.d(text);
             }
         });
@@ -194,11 +198,20 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
 
     private void runUpdate() {
         if (hasToken()) {
-            updateRefreshingUI(true);
-            SunnyNotesServiceHelper.Sync(getActivity());
-            Timber.d("Run SunnyNotesServiceHelper.Sync after user login");
+            // Check internet
+            if (Utility.isNetworkAvailable(getActivity())) {
+                updateRefreshingUI(true);
+                SunnyNotesServiceHelper.Sync(getActivity());
+                Timber.d("Run SunnyNotesServiceHelper.Sync after user login");
+            } else {
+                Toast.makeText(getActivity(),
+                        getString(R.string.empty_note_list_no_network),
+                        Toast.LENGTH_SHORT).
+                        show();
+            }
         } else {
             Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
+            mFirstLaunch = true;
         }
     }
 
@@ -219,6 +232,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Sort order:  Ascending, by date.
         //String sortOrder = NoteColumns.SERVER_MOD_TIME + " ASC";
+        //String sortOrder = NoteColumns.SERVER_MOD_TIME + " DESC";
         String sortOrder = null;
 
         Uri notesUri = NoteProvider.Notes.CONTENT_URI;

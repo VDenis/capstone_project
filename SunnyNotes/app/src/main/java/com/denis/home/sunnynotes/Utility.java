@@ -3,6 +3,8 @@ package com.denis.home.sunnynotes;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 
 import com.denis.home.sunnynotes.data.NoteColumns;
@@ -16,6 +18,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Denis on 23.03.2016.
@@ -188,4 +192,45 @@ public class Utility {
         return null;
     }
 
+    public static boolean getNoteIdIfExist(Context context, String noteTitle) {
+        boolean result = false;
+        String filename = noteTitle + ".txt";
+        Cursor initQueryCursor;
+        initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+                new String[]{"Distinct " + NoteColumns.FILE_NAME},
+                NoteColumns.FILE_NAME+"=?", new String[]{filename},
+                null);
+        if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
+            result = true;
+        }
+        return result;
+    }
+
+    // validating email id
+    public static boolean isValidNoteTitle(String noteTitle) {
+        if (noteTitle.length() < 2) {
+            return false;
+        }
+
+        String EMAIL_PATTERN = "[0-9a-zA-Z_]+";
+
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(noteTitle);
+        return matcher.matches();
+    }
+
+    /**
+     * Returns true if the network is available or about to become available.
+     *
+     * @param c Context used to get the ConnectivityManager
+     * @return true if the network is available
+     */
+    static public boolean isNetworkAvailable(Context c) {
+        ConnectivityManager cm =
+                (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
 }
