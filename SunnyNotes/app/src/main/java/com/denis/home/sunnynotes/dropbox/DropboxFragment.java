@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 
+import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.dropbox.core.android.Auth;
 
@@ -17,11 +18,11 @@ public abstract class DropboxFragment extends Fragment {
 
         Context context = getActivity();
         SharedPreferences prefs = context.getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
-        String accessToken = prefs.getString("access-token", null);
+        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
         if (accessToken == null) {
             accessToken = Auth.getOAuth2Token();
             if (accessToken != null) {
-                prefs.edit().putString("access-token", accessToken).apply();
+                prefs.edit().putString(getString(R.string.pref_access_token_key), accessToken).apply();
                 initAndFirstLoadData(accessToken);
             } else {
                 registrationInterruption();
@@ -44,7 +45,7 @@ public abstract class DropboxFragment extends Fragment {
     protected boolean hasToken() {
         Context context = getActivity();
         SharedPreferences prefs = context.getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
-        String accessToken = prefs.getString("access-token", null);
+        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
         return accessToken != null;
     }
 

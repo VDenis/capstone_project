@@ -2,6 +2,7 @@ package com.denis.home.sunnynotes;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -43,7 +44,9 @@ public class Utility {
                 text.append('\n');
             }
             br.close();
-        } catch (IOException e) { e.printStackTrace();}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return text.toString();
     }
@@ -198,7 +201,7 @@ public class Utility {
         Cursor initQueryCursor;
         initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
                 new String[]{"Distinct " + NoteColumns.FILE_NAME},
-                NoteColumns.FILE_NAME+"=?", new String[]{filename},
+                NoteColumns.FILE_NAME + "=?", new String[]{filename},
                 null);
         if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
             result = true;
@@ -208,16 +211,20 @@ public class Utility {
 
     // validating email id
     public static boolean isValidNoteTitle(String noteTitle) {
-        if (noteTitle.length() < 2) {
+        if (noteTitle == null) {
             return false;
+
+        } else if (noteTitle.isEmpty() || noteTitle.length() < 2) {
+            return false;
+        } else {
+            String EMAIL_PATTERN = "[0-9a-zA-Z_]+";
+
+            Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+            Matcher matcher = pattern.matcher(noteTitle);
+            return matcher.matches();
         }
-
-        String EMAIL_PATTERN = "[0-9a-zA-Z_]+";
-
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher = pattern.matcher(noteTitle);
-        return matcher.matches();
     }
+
 
     /**
      * Returns true if the network is available or about to become available.
@@ -227,10 +234,15 @@ public class Utility {
      */
     static public boolean isNetworkAvailable(Context c) {
         ConnectivityManager cm =
-                (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+
+    static public void deleteUserAccount(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
+        prefs.edit().putString(context.getString(R.string.pref_access_token_key), "").apply();
     }
 }

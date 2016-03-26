@@ -18,6 +18,7 @@ import android.view.View;
 import com.denis.home.sunnynotes.noteDetail.NoteDetailActivity;
 import com.denis.home.sunnynotes.noteDetail.NoteDetailFragment;
 import com.denis.home.sunnynotes.noteList.NoteListFragment;
+import com.denis.home.sunnynotes.settings.SettingsActivity;
 import com.facebook.stetho.Stetho;
 
 public class MainActivity extends AppCompatActivity
@@ -135,6 +136,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
 
 /*        if (id == R.id.nav_camera) {
             // Handle the camera action

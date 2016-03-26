@@ -8,6 +8,7 @@ package com.denis.home.sunnynotes.dropbox;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 
+import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.dropbox.core.android.Auth;
 
@@ -21,11 +22,11 @@ public abstract class DropboxActivity extends AppCompatActivity {
         super.onResume();
 
         SharedPreferences prefs = getSharedPreferences(Utility.getSharedPreferencesName(), MODE_PRIVATE);
-        String accessToken = prefs.getString("access-token", null);
+        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
         if (accessToken == null) {
             accessToken = Auth.getOAuth2Token();
             if (accessToken != null) {
-                prefs.edit().putString("access-token", accessToken).apply();
+                prefs.edit().putString(getString(R.string.pref_access_token_key), accessToken).apply();
                 initAndLoadData(accessToken);
             }
         } else {
@@ -43,7 +44,7 @@ public abstract class DropboxActivity extends AppCompatActivity {
 
     protected boolean hasToken() {
         SharedPreferences prefs = getSharedPreferences(Utility.getSharedPreferencesName(), MODE_PRIVATE);
-        String accessToken = prefs.getString("access-token", null);
+        String accessToken = prefs.getString(getString(R.string.pref_access_token_key), null);
         return accessToken != null;
     }
 }
