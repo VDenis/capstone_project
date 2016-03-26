@@ -4,6 +4,7 @@ package com.denis.home.sunnynotes.settings;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,14 +14,21 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.denis.home.sunnynotes.BuildConfig;
+import com.denis.home.sunnynotes.MainActivity;
 import com.denis.home.sunnynotes.R;
+import com.denis.home.sunnynotes.Utility;
+import com.denis.home.sunnynotes.dropbox.DropboxPreferenceFragment;
+import com.dropbox.core.android.Auth;
 
 import java.util.List;
 
@@ -156,18 +164,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
      */
+    @Override
     protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
+/*        return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+                || NotificationPreferenceFragment.class.getName().equals(fragmentName);*/
+
+        return PreferenceFragment.class.getName().equals(fragmentName)
+                || DataSyncPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+/*    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -192,13 +204,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     /**
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+/*    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -222,14 +234,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     /**
      * This fragment shows data and sync preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
+    public static class DataSyncPreferenceFragment extends DropboxPreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -240,7 +252,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sync_key)));
         }
 
         @Override
@@ -252,5 +264,67 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if ( key.equals(getString(R.string.pref_sync_key)) ) {
+                Boolean isSync = sharedPreferences.getBoolean(key, Boolean.valueOf(getString(R.string.pref_sync_default)));
+                if (!isSync) {
+                    Utility.deleteUserAccount(getActivity());
+                    Utility.deleteAllNoteInDB(getActivity());
+                    Toast.makeText(getActivity(), R.string.message_account_deleted, Toast.LENGTH_SHORT).show();
+                } else {
+                    Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
+                }
+            }
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        protected void loadData() {
+            SharedPreferences prefs = getActivity().getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
+            prefs.edit().putString(getActivity().getString(R.string.pref_sync_key), String.valueOf(true)).apply();
+            SwitchPreference switchPref = (SwitchPreference) findPreference(getActivity().getString(R.string.pref_sync_key));
+            switchPref.setChecked(true);
+        }
+
+        @Override
+        protected void registrationInterruption() {
+            SharedPreferences prefs = getActivity().getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
+            prefs.edit().putString(getActivity().getString(R.string.pref_sync_key), String.valueOf(false)).apply();
+            SwitchPreference switchPref = (SwitchPreference) findPreference(getActivity().getString(R.string.pref_sync_key));
+            switchPref.setChecked(false);
+        }
+
+        @Override
+        public void onPause() {
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            super.onPause();
+        }
+    }
+
+
+    // Parent activity in manifest didn't work, use on R.id.home button pressed
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -119,6 +120,38 @@ public class Utility {
     public static int deleteNoteInDB(Context context, Uri noteUri) {
         int deleteCount = context.getContentResolver().delete(noteUri,
                 null, null);
+        return deleteCount;
+    }
+
+    public static int deleteAllNoteInDB(Context context) {
+        Cursor initQueryCursor;
+        int deleteCount = -1;
+
+        initQueryCursor = context.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+                new String[]{NoteColumns.LOWER_PATH}, null,
+                null, null);
+
+        if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
+            ArrayList<String> mFilesPath = new ArrayList<String>();
+            for (initQueryCursor.moveToFirst(); !initQueryCursor.isAfterLast(); initQueryCursor.moveToNext()) {
+                // The Cursor is now set to the right position
+                mFilesPath.add(initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.LOWER_PATH)));
+            }
+
+            boolean isDelete = false;
+            for (String deletePath : mFilesPath) {
+                isDelete = false;
+
+                File path = context.getFilesDir();
+                File file = new File(path + deletePath);
+
+                isDelete = file.delete();
+            }
+
+            // Delete all rows in database
+            deleteCount = context.getContentResolver().delete(NoteProvider.Notes.CONTENT_URI,
+                    null, null);
+        }
         return deleteCount;
     }
 
@@ -243,6 +276,7 @@ public class Utility {
 
     static public void deleteUserAccount(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
-        prefs.edit().putString(context.getString(R.string.pref_access_token_key), "").apply();
+        //prefs.edit().putString(context.getString(R.string.pref_access_token_key), "").apply();
+        prefs.edit().remove(context.getString(R.string.pref_access_token_key)).apply();
     }
 }
