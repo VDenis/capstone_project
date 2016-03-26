@@ -204,6 +204,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
                 SunnyNotesServiceHelper.Sync(getActivity());
                 Timber.d("Run SunnyNotesServiceHelper.Sync after user login");
             } else {
+                updateRefreshingUI(false);
                 Toast.makeText(getActivity(),
                         getString(R.string.empty_note_list_no_network),
                         Toast.LENGTH_SHORT).

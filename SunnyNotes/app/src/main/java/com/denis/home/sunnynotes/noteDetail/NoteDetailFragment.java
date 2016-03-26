@@ -89,10 +89,15 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                     getActivity().finish();
                 } else {
                     Toast.makeText(getActivity(),
-                            getString(R.string.empty_note_list_no_network),
+                            getString(R.string.note_detail_no_network),
                             Toast.LENGTH_SHORT).
                             show();
                 }
+            } else {
+                Toast.makeText(getActivity(),
+                        getString(R.string.note_detail_note_dont_created),
+                        Toast.LENGTH_SHORT).
+                        show();
             }
             return true;
         } else if (id == R.id.action_save_note) {
@@ -109,7 +114,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                             ActionServiceHelper.Update(getActivity(), mUri, filename);
                         } else {
                             Toast.makeText(getActivity(),
-                                    getString(R.string.empty_note_list_no_network),
+                                    getString(R.string.note_detail_no_network),
                                     Toast.LENGTH_SHORT).
                                     show();
                         }
@@ -132,7 +137,7 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                             ActionServiceHelper.Add(getActivity(), filePath);
                         } else {
                             Toast.makeText(getActivity(),
-                                    getString(R.string.empty_note_list_no_network),
+                                    getString(R.string.note_detail_no_network),
                                     Toast.LENGTH_SHORT).
                                     show();
                         }
