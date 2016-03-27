@@ -6,4 +6,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="note_text_size">32sp</dimen>
+    <dimen name="note_title_textsize">34sp</dimen>
+    <dimen name="note_content_textsize">20sp</dimen>
+    <dimen name="admob_height">55dp</dimen>
 </resources>

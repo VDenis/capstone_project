@@ -6,19 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.RemoteException;
 
-import com.denis.home.sunnynotes.BuildConfig;
+import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
 import com.denis.home.sunnynotes.data.NoteProvider;
+import com.denis.home.sunnynotes.dropbox.DropboxClientFactory;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import timber.log.Timber;
  */
 public class SunnyNotesService extends IntentService {
 
+    DbxClientV2 client;
     private Context mContext;
 
     public SunnyNotesService() {
@@ -37,18 +41,21 @@ public class SunnyNotesService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO load notes from Dropbox
         Timber.d("onHandleIntent");
         if (mContext == null) {
             mContext = this;
         }
 
-        Test();
+        Sync();
     }
 
-    private void Test() {
-        DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial", "en_US");
-        DbxClientV2 client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);
+    private void Sync() {
+/*        DbxRequestConfig config = new DbxRequestConfig(Utility.getDropboxClientIdentifier(), Utility.getUserLocale());
+        client = new DbxClientV2(config, BuildConfig.DEVELOP_ONLY_DROPBOX_ACCESS_TOKEN);*/
+
+        client = DropboxClientFactory.getClient();
+        if (client == null)
+            return;
 
         // Get current account info
         FullAccount account = null;
@@ -57,51 +64,102 @@ public class SunnyNotesService extends IntentService {
         } catch (DbxException e) {
             e.printStackTrace();
         }
-        Timber.d(account.getName().getDisplayName());
+        //Timber.d(account.getName().getDisplayName());
 
         // Get files and folder metadata from Dropbox root directory
         List<Metadata> entries = null;
         try {
             //entries = client.files.listFolder("").getEntries();
-            entries = client.files.listFolder("/python-test").getEntries();
+            //entries = client.files.listFolder("/python-test").getEntries();
+            entries = client.files.listFolder(Utility.getDropboxAppRootFolder()).getEntries();
         } catch (DbxException e) {
             e.printStackTrace();
         }
+
+        //SunnyNotesServiceHelper.sendRefreshStateCallback(this, true);
 
         Cursor initQueryCursor;
         initQueryCursor = mContext.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
                 new String[]{"Distinct " + NoteColumns.FILE_ID}, null,
                 null, null);
-        if (initQueryCursor.getCount() == 0 || initQueryCursor == null) {
-            try {
-                mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
-                        fileMetadataToContentVals(entries));
-            } catch (RemoteException | OperationApplicationException e) {
-                e.printStackTrace();
+        if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
+            //DatabaseUtils.dumpCursor(initQueryCursor);
+            //initQueryCursor.moveToFirst();
+
+            ArrayList<String> mArrayList = new ArrayList<String>();
+            for (initQueryCursor.moveToFirst(); !initQueryCursor.isAfterLast(); initQueryCursor.moveToNext()) {
+                // The Cursor is now set to the right position
+                mArrayList.add(initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.FILE_ID)));
             }
-        } else {
-            DatabaseUtils.dumpCursor(initQueryCursor);
-            initQueryCursor.moveToFirst();
+
+            if (entries != null) {
+                for (Metadata metadata : entries) {
+                    if (metadata instanceof FileMetadata) {
+                        FileMetadata fileMetadata = (FileMetadata) metadata;
+                        if (deleteFile(fileMetadata)) {
+                            Timber.d("Delete file: " + metadata.getName());
+                        }
+                    }
+                }
+            }
+
+            // Delete all rows in database
+            int deleteCount = mContext.getContentResolver().delete(NoteProvider.Notes.CONTENT_URI,
+                    null, null);
+            Timber.d(String.format("Deleted all row in database, count: %d", deleteCount));
+
+
+            /*
+            initQueryCursor = mContext.getContentResolver().query(NoteProvider.Notes.CONTENT_URI,
+                    new String[]{NoteColumns.FILE_ID, NoteColumns.FILE_NAME, NoteColumns.DISPLAY_PATH, NoteColumns.LOWER_PATH},
+                    null, null, null);
             for (int i = 0; i < initQueryCursor.getCount(); i++) {
-                String fileName = initQueryCursor.getString(initQueryCursor.getColumnIndex("file_name"));
+                // java.lang.IllegalStateException: Couldn't read row 0, col -1 from CursorWindow.
+                // Make sure the Cursor is initialized correctly before accessing data from it.
+                initQueryCursor.moveToFirst();
+                String fileName = initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.FILE_NAME));
 
                 initQueryCursor.moveToNext();
-            }
+            }*/
         }
+        if (initQueryCursor != null) {
+            initQueryCursor.close();
+        }
+
+
+        try {
+/*            mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
+                    fileMetadataToContentVals(entries));*/
+            fileMetadataToContentVals(entries);
+            Timber.d("Insert new data into database");
+        } catch (RemoteException | OperationApplicationException e) {
+            e.printStackTrace();
+        } finally {
+            SunnyNotesServiceHelper.sendRefreshStateCallback(this, false);
+        }
+
     }
 
-    public static ArrayList fileMetadataToContentVals(List<Metadata> entries) {
+    public ArrayList fileMetadataToContentVals(List<Metadata> entries) throws RemoteException, OperationApplicationException {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
         for (Metadata metadata : entries) {
             if (metadata instanceof FileMetadata) {
-                batchOperations.add(buildBatchOperation((FileMetadata) metadata));
+                FileMetadata fileMetadata = (FileMetadata) metadata;
+                String fileName = fileMetadata.getName();
+                if (fileName.endsWith(".txt") && downloadFile(fileMetadata)) {
+                    Timber.d("Download file: " + metadata.getName());
+                    batchOperations.add(buildBatchOperation(fileMetadata));
+                    mContext.getContentResolver().applyBatch(NoteProvider.AUTHORITY,
+                            batchOperations);
+                    batchOperations.clear();
+                }
             }
             Timber.d(metadata.getPathLower());
         }
         return batchOperations;
     }
 
-    private static ContentProviderOperation buildBatchOperation(FileMetadata fileMetadata) {
+    private ContentProviderOperation buildBatchOperation(FileMetadata fileMetadata) {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 NoteProvider.Notes.CONTENT_URI);
         builder.withValue(NoteColumns.FILE_ID, fileMetadata.getId());
@@ -113,4 +171,61 @@ public class SunnyNotesService extends IntentService {
         builder.withValue(NoteColumns.FILE_SIZE, fileMetadata.getSize());
         return builder.build();
     }
+
+    private boolean downloadFile(FileMetadata fileMetadata) {
+        boolean isDownload = false;
+
+        String server_lower_path = fileMetadata.getPathLower();
+        File path = getFilesDir();
+        File folder = new File(path + server_lower_path.substring(0, server_lower_path.length() - fileMetadata.getName().length()));
+
+        // Make sure the Downloads directory exists.
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
+                RuntimeException mException = new RuntimeException("Unable to create directory: " + path);
+            }
+        } else if (!folder.isDirectory()) {
+            RuntimeException mException = new IllegalStateException("Download path is not a directory: " + path);
+            return isDownload;
+        }
+
+        OutputStream outputStream = null;
+        // Download the file.
+        try {
+            File file = new File(path + server_lower_path);
+            outputStream = new FileOutputStream(file);
+            FileMetadata result = client.files.download(server_lower_path).download(outputStream);
+            isDownload = true;
+        } catch (DbxException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return isDownload;
+    }
+
+    private boolean deleteFile(FileMetadata fileMetadata) {
+        boolean isDelete = false;
+
+        String serverLowerPath = fileMetadata.getPathLower();
+        File path = getFilesDir();
+        File file = new File(path + serverLowerPath);
+
+        // Make sure the Downloads directory exists.
+        if (!file.exists()) {
+            return isDelete;
+        } else {
+            if (file.delete()) {
+                isDelete = true;
+            }
+        }
+
+        return isDelete;
+    }
+
 }

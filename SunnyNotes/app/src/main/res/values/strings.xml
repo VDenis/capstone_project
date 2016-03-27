@@ -4,6 +4,63 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <!-- Menu -->
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_delete_note">Delete</string>
+    <string name="action_save_note">Save</string>
+    <string name="action_share_note">Share</string>
+
+    <!-- Side menu -->
+    <string name="action_default_folder">Notes</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--<string name="title_activity_note_detail">Note Detail Activity</string>-->
+    <string name="title_activity_note_detail">Create new note</string>
+
+    <!-- Hint -->
+    <string name="note_content_hint">Enter text here</string>
+    <string name="note_title_hint">Enter note title</string>
+
+    <!-- Error -->
+    <string name="error_invalid_note_title">Use numbers and english letters</string>
+    <string name="error_note_exist">This note already exist, choose another name</string>
+
+    <string name="empty_note_list">No Notes</string>
+    <string name="empty_note_list_no_network">No notes( The network is not available to fetch notes. Turn on and try again)</string>
+    <string name="note_detail_no_network">The network is not available. Turn on and try again later</string>
+    <string name="note_detail_note_dont_created">Note don\'t created</string>
+
+
+    <!-- a11n -->
+    <string name="a11n_note_title">Note title</string>
+    <string name="a11n_note_content">Note content</string>
+    <string name="a11n_add_note">Create a new note</string>
+
+    <!-- Setting -->
+    <string name="pref_access_token_key" translatable="false">access-token</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_title_sync">Use sync</string>
+    <string name="pref_description_sync">Sync with Dropbox service</string>
+
+    <string name="pref_sync_key" translatable="false">sync-status</string>
+    <string name="pref_sync_default" translatable="false">false</string>
+
+    <string name="message_account_deleted">Account deleted</string>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+
+    <!-- Ads test-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_mob_test_device">D054F2A9AC5333AED3F4EAB885A8D612</string>
+
+    <!-- Analytics -->
+    <string name="analytics_settings_page" translatable="false">Settings screen</string>
+    <string name="analytics_main_page" translatable="false">Main screen</string>
+    <string name="analytics_note_detail_page" translatable="false">Note detail screen</string>
+    <string name="analytics_create_new_note">Create new note</string>
 </resources>

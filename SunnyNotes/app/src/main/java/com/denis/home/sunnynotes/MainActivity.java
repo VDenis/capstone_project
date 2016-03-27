@@ -1,10 +1,11 @@
 package com.denis.home.sunnynotes;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,11 +15,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.denis.home.sunnynotes.service.SunnyNotesService;
+import com.denis.home.sunnynotes.noteDetail.NoteDetailActivity;
+import com.denis.home.sunnynotes.noteDetail.NoteDetailFragment;
+import com.denis.home.sunnynotes.noteList.NoteListFragment;
+import com.denis.home.sunnynotes.settings.SettingsActivity;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NoteListFragment.Callback {
+
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private Cursor mCursor;
+    private boolean mTwoPane;
+    private Tracker mTracker;
+
+/*    private QuoteCursorAdapter mCursorAdapter;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +40,37 @@ public class MainActivity extends AppCompatActivity
 
         Stetho.initializeWithDefaults(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
+        if (findViewById(R.id.note_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.note_detail_container, new NoteDetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction(getString(R.string.analytics_create_new_note))
+                        .build());
+                NavigateToDetailView(null);
             }
         });
 
@@ -47,6 +82,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        CustomApplication application = (CustomApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+    }
+
+    @Override
+    protected void onResume() {
+        mTracker.setScreenName(getString(R.string.analytics_main_page));
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
     }
 
     @Override
@@ -62,7 +107,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -75,12 +120,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_refresh) {
-            // Start Service
-            //Timber.d("Start intent service");
-            Intent intent = new Intent(this, SunnyNotesService.class);
-            this.startService(intent);
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -93,22 +134,36 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onItemSelected(Uri noteUri) {
+        NavigateToDetailView(noteUri);
+    }
+
+    private void NavigateToDetailView(Uri noteUri) {
+
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            NoteDetailFragment fragment = NoteDetailFragment.newInstance(noteUri);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.note_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, NoteDetailActivity.class)
+                    .setData(noteUri);
+            startActivity(intent);
+        }
     }
 }
