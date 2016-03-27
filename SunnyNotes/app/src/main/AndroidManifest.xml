@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--This meta-data tag is required to use Google Play Services.-->
+        <!-- This meta-data tag is required to use Google Play Services. -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
@@ -54,7 +54,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -64,7 +63,6 @@
                 android:value="com.denis.home.sunnynotes.MainActivity"/>
             >
         </activity>
-        
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
@@ -73,10 +71,22 @@
         <service android:name=".service.SunnyNotesService"/>
         <service android:name=".service.ActionService"/>
 
+        <!-- suppress AndroidDomInspection -->
         <provider
             android:name=".data.generated.NoteProvider"
             android:authorities="com.denis.home.sunnynotes.data.NoteProvider"
             android:exported="false"/>
+
+        <receiver android:name=".widget.CreateNoteWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_create_note"/>
+        </receiver>
+
     </application>
 
 </manifest>

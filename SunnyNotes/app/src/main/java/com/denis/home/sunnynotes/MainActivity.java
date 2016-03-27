@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NoteListFragment.Callback {
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
     private Cursor mCursor;
     private boolean mTwoPane;
     private Tracker mTracker;
