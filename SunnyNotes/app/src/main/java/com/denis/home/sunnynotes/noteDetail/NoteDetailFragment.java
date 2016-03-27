@@ -19,11 +19,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.denis.home.sunnynotes.BuildConfig;
 import com.denis.home.sunnynotes.CustomApplication;
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
+import com.denis.home.sunnynotes.dropbox.DropboxFragment;
 import com.denis.home.sunnynotes.service.ActionServiceHelper;
+import com.dropbox.core.android.Auth;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -34,7 +37,7 @@ import timber.log.Timber;
  * Use the {@link NoteDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NoteDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class NoteDetailFragment extends DropboxFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String DETAIL_URI = "URI";
     private static final int DETAIL_LOADER = 0;
@@ -98,17 +101,21 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
 
         if (id == R.id.action_delete_note) {
             if (mUri != null) {
-                // Check internet
-                if (Utility.isNetworkAvailable(getActivity())) {
-                    Utility.deleteTxtFile(getActivity(), mUri);
-                    ActionServiceHelper.Delete(getActivity(), mUri);
+                if (hasToken()) {
+                    // Check internet
+                    if (Utility.isNetworkAvailable(getActivity())) {
+                        Utility.deleteTxtFile(getActivity(), mUri);
+                        ActionServiceHelper.Delete(getActivity(), mUri);
 
-                    getActivity().finish();
+                        getActivity().finish();
+                    } else {
+                        Toast.makeText(getActivity(),
+                                getString(R.string.note_detail_no_network),
+                                Toast.LENGTH_SHORT).
+                                show();
+                    }
                 } else {
-                    Toast.makeText(getActivity(),
-                            getString(R.string.note_detail_no_network),
-                            Toast.LENGTH_SHORT).
-                            show();
+                    Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
                 }
             } else {
                 Toast.makeText(getActivity(),
@@ -122,46 +129,54 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
 
-                if (Utility.isValidNoteTitle(filename)) {
-                    if (!Utility.getNoteIdIfExist(getActivity(), filename, mUri)) {
-                        // Check internet
-                        if (Utility.isNetworkAvailable(getActivity())) {
-                            Utility.updateTxtFile(getActivity(), mUri, content);
-                            ActionServiceHelper.Update(getActivity(), mUri, filename);
+                if (hasToken()) {
+                    if (Utility.isValidNoteTitle(filename)) {
+                        if (!Utility.getNoteIdIfExist(getActivity(), filename, mUri)) {
+                            // Check internet
+                            if (Utility.isNetworkAvailable(getActivity())) {
+                                Utility.updateTxtFile(getActivity(), mUri, content);
+                                ActionServiceHelper.Update(getActivity(), mUri, filename);
+                            } else {
+                                Toast.makeText(getActivity(),
+                                        getString(R.string.note_detail_no_network),
+                                        Toast.LENGTH_SHORT).
+                                        show();
+                            }
                         } else {
-                            Toast.makeText(getActivity(),
-                                    getString(R.string.note_detail_no_network),
-                                    Toast.LENGTH_SHORT).
-                                    show();
+                            mNoteTitleView.setError(getString(R.string.error_note_exist));
                         }
                     } else {
-                        mNoteTitleView.setError(getString(R.string.error_note_exist));
+                        mNoteTitleView.setError(getString(R.string.error_invalid_note_title));
                     }
                 } else {
-                    mNoteTitleView.setError(getString(R.string.error_invalid_note_title));
+                    Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
                 }
             } else {
                 String filename = mNoteTitleView.getText().toString();
                 String content = mNoteContentView.getText().toString();
-                if (Utility.isValidNoteTitle(filename)) {
-                    if (!Utility.getNoteIdIfExist(getActivity(), filename)) {
-                        // Check internet
-                        if (Utility.isNetworkAvailable(getActivity())) {
-                            filename = mNoteTitleView.getText().toString();
-                            content = mNoteContentView.getText().toString();
-                            String filePath = Utility.createTxtFile(getActivity(), filename, content);
-                            ActionServiceHelper.Add(getActivity(), filePath);
+                if (hasToken()) {
+                    if (Utility.isValidNoteTitle(filename)) {
+                        if (!Utility.getNoteIdIfExist(getActivity(), filename)) {
+                            // Check internet
+                            if (Utility.isNetworkAvailable(getActivity())) {
+                                filename = mNoteTitleView.getText().toString();
+                                content = mNoteContentView.getText().toString();
+                                String filePath = Utility.createTxtFile(getActivity(), filename, content);
+                                ActionServiceHelper.Add(getActivity(), filePath);
+                            } else {
+                                Toast.makeText(getActivity(),
+                                        getString(R.string.note_detail_no_network),
+                                        Toast.LENGTH_SHORT).
+                                        show();
+                            }
                         } else {
-                            Toast.makeText(getActivity(),
-                                    getString(R.string.note_detail_no_network),
-                                    Toast.LENGTH_SHORT).
-                                    show();
+                            mNoteTitleView.setError(getString(R.string.error_note_exist));
                         }
                     } else {
-                        mNoteTitleView.setError(getString(R.string.error_note_exist));
+                        mNoteTitleView.setError(getString(R.string.error_invalid_note_title));
                     }
                 } else {
-                    mNoteTitleView.setError(getString(R.string.error_invalid_note_title));
+                    Auth.startOAuth2Authentication(getActivity(), BuildConfig.DROPBOX_APP_KEY_JAVA);
                 }
             }
             return true;
@@ -186,6 +201,16 @@ public class NoteDetailFragment extends Fragment implements LoaderManager.Loader
         mTracker.setScreenName(getString(R.string.analytics_note_detail_page));
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         super.onResume();
+    }
+
+    @Override
+    protected void loadData() {
+
+    }
+
+    @Override
+    protected void registrationInterruption() {
+
     }
 
     @Override
