@@ -33,5 +33,8 @@ public class SunnyNotesServiceHelper {
         // Defines the key for the status "extra" in an Intent
         public static final String EXTENDED_DATA_STATUS =
                 "com.denis.home.sunnynotes.service.sunnynotes.STATUS";
+
+        public static final String ACTION_DATA_UPDATED =
+                "com.denis.home.sunnynotes.app.ACTION_DATA_UPDATED";
     }
 }

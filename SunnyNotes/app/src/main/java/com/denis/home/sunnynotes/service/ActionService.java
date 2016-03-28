@@ -107,6 +107,7 @@ public class ActionService extends IntentService {
                 }
             }
         }
+        Utility.updateWidgets(mContext);
     }
 
     private FileMetadata uploadFileToDropbox(String serverLowerPath) {

@@ -136,6 +136,7 @@ public class SunnyNotesService extends IntentService {
             e.printStackTrace();
         } finally {
             SunnyNotesServiceHelper.sendRefreshStateCallback(this, false);
+            Utility.updateWidgets(mContext);
         }
 
     }

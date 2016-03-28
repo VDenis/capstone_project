@@ -17,4 +17,11 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="note_list_padding_top">10dp</dimen>
+
+
+    <!-- Widget -->
+    <dimen name="widget_recent_notes_default_width">250dp</dimen>
+    <dimen name="widget_recent_notes_default_height">180dp</dimen>
+    <dimen name="widget_recent_notes_min_resize_width">220dp</dimen>
+    <dimen name="widget_recent_notes_min_resize_height">@dimen/widget_recent_notes_default_height</dimen>
 </resources>
