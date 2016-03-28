@@ -23,17 +23,32 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/fragment_note_list"
-        android:name="com.denis.home.sunnynotes.noteList.NoteListFragment"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:layout="@layout/fragment_note_list"/>
+        android:layout_height="match_parent">
+
+        <TableRow>
+            <fragment
+                android:id="@+id/fragment_note_list"
+                android:name="com.denis.home.sunnynotes.noteList.NoteListFragment"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                tools:layout="@layout/fragment_note_list"/>
+
+            <FrameLayout
+                android:id="@+id/note_detail_container"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                tools:layout="@layout/fragment_note_detail"/>
+        </TableRow>
+    </TableLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
