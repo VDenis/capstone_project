@@ -64,7 +64,12 @@
     <string name="analytics_main_page" translatable="false">Main screen</string>
     <string name="analytics_note_detail_page" translatable="false">Note detail screen</string>
     <string name="analytics_create_new_note" translatable="false">Create new note</string>
+
     <string name="appwidget_text">Add note</string>
     <string name="add_widget">Add widget</string>
+
+    <string name="empty_notes_list">No notes</string>
+    <string name="title_widget_recent_notes">Resent notes</string>
+
 
 </resources>

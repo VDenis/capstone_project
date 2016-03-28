@@ -87,6 +87,21 @@
                 android:resource="@xml/widget_info_create_note"/>
         </receiver>
 
+        <receiver
+            android:name=".widget.RecentNotesWidgetProvider"
+            android:label="@string/title_widget_recent_notes">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.denis.home.sunnynotes.app.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/widget_info_recent_notes" />
+        </receiver>
+
+        <service
+            android:name=".widget.RecentNotesWidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
     </application>
 
 </manifest>

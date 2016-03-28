@@ -2,6 +2,7 @@ package com.denis.home.sunnynotes;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -10,6 +11,7 @@ import android.net.Uri;
 
 import com.denis.home.sunnynotes.data.NoteColumns;
 import com.denis.home.sunnynotes.data.NoteProvider;
+import com.denis.home.sunnynotes.service.SunnyNotesServiceHelper;
 import com.dropbox.core.v2.files.FileMetadata;
 
 import java.io.BufferedReader;
@@ -297,5 +299,16 @@ public class Utility {
         SharedPreferences prefs = context.getSharedPreferences(Utility.getSharedPreferencesName(), Context.MODE_PRIVATE);
         //prefs.edit().putString(context.getString(R.string.pref_access_token_key), "").apply();
         prefs.edit().remove(context.getString(R.string.pref_access_token_key)).apply();
+    }
+
+
+
+    //---------------
+
+    static public void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(SunnyNotesServiceHelper.Constants.ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }
