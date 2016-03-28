@@ -29,6 +29,7 @@
             android:id="@+id/recyclerview_notes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="@dimen/note_list_padding_top"
             tools:listitem="@layout/list_item_note"
             />
 
