@@ -1,0 +1,45 @@
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                                            xmlns:tools="http://schemas.android.com/tools"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginTop="?attr/actionBarSize"
+                                            tools:context="com.denis.home.sunnynotes.noteDetail.NoteDetailFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+<!--        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/detail_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>-->
+        <EditText
+            android:id="@+id/note_title_edittext_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:hint="@string/note_title_hint"
+            android:inputType="text"
+            android:maxLength="64"
+            android:maxLines="1"
+            android:textSize="@dimen/note_title_textsize"
+            tools:text="Test note title Test note title Test note title"/>
+
+        <EditText
+            android:id="@+id/note_content_edittext_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/note_content_hint"
+            android:textSize="@dimen/note_content_textsize"
+            tools:text="Test note content Test note content Test note content Test note content Test note content Test note content"/>
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

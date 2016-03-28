@@ -87,9 +87,7 @@ public class ActionService extends IntentService {
                         null,
                         null
                 );
-                if (initQueryCursor == null || initQueryCursor.getCount() == 0) {
-
-                } else {
+                if (initQueryCursor != null && initQueryCursor.getCount() != 0) {
                     if (initQueryCursor.moveToFirst()) {
                         String serverLowerPath = initQueryCursor.getString(initQueryCursor.getColumnIndex(NoteColumns.LOWER_PATH));
                         switch (requestOperation) {

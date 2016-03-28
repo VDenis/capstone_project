@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.denis.home.sunnynotes.BuildConfig;
 import com.denis.home.sunnynotes.CustomApplication;
+import com.denis.home.sunnynotes.MainActivity;
 import com.denis.home.sunnynotes.R;
 import com.denis.home.sunnynotes.Utility;
 import com.denis.home.sunnynotes.data.NoteColumns;
@@ -80,7 +81,7 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (getActivity() instanceof NoteDetailActivity) {
+        if (getActivity() instanceof NoteDetailActivity || getActivity() instanceof MainActivity) {
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.detail, menu);
             finishCreatingMenu(menu);
@@ -107,7 +108,14 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
                         Utility.deleteTxtFile(getActivity(), mUri);
                         ActionServiceHelper.Delete(getActivity(), mUri);
 
-                        getActivity().finish();
+                        boolean useDetailActivity = getActivity().getResources()
+                                .getBoolean(R.bool.use_detail_activity);
+                        if (useDetailActivity) {
+                            getActivity().finish();
+                        } else {
+                            mNoteTitleView.setText("");
+                            mNoteContentView.setText("");
+                        }
                     } else {
                         Toast.makeText(getActivity(),
                                 getString(R.string.note_detail_no_network),
@@ -180,6 +188,8 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
                 }
             }
             return true;
+        } else if (id == R.id.action_save_note) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -254,9 +264,20 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
 
             mShareNote = String.format("%s:\n%s", noteName, fileContent);
 
-            if (mActionBar != null) {
+            boolean useDetailActivity = getActivity().getResources()
+                    .getBoolean(R.bool.use_detail_activity);
+            if (mActionBar != null && useDetailActivity) {
                 mActionBar.setTitle(noteName);
             }
+
+/*            AppCompatActivity activity = (AppCompatActivity)getActivity();
+            Toolbar toolbarView = (Toolbar) getView().findViewById(R.id.main_toolbar);
+            if ( null != toolbarView ) {
+                Menu menu = toolbarView.getMenu();
+                if ( null != menu ) menu.clear();
+                toolbarView.inflateMenu(R.menu.detail);
+                finishCreatingMenu(toolbarView.getMenu());
+            }*/
             //mNoteTitleView.setText("Hi HI hI debug");
         }
     }

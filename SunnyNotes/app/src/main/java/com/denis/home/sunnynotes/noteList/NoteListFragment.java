@@ -63,7 +63,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
 
     public NoteListFragment() {
         // Required empty public constructor
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -105,6 +105,17 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         //Intent intent = new Intent(getActivity(), MainActivity.class);
         //startActivity(intent);
     }
+
+/*    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mSwipeRefreshLayout!=null) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            mSwipeRefreshLayout.destroyDrawingCache();
+            mSwipeRefreshLayout.clearAnimation();
+        }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -167,6 +178,7 @@ public class NoteListFragment extends DropboxFragment implements LoaderManager.L
         AdRequest adRequest = new AdRequest.Builder().
                 addTestDevice(AdRequest.DEVICE_ID_EMULATOR).
                 addTestDevice(getActivity().getString(R.string.ad_mob_test_device)).
+                addTestDevice(getActivity().getString(R.string.ad_mob_test_device1)).
                 build();
         adView.loadAd(adRequest);
 
