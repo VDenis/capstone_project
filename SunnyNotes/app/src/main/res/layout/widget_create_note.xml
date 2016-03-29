@@ -22,8 +22,12 @@
         android:contentDescription="@string/appwidget_text"
         android:text="@string/appwidget_text"
         android:textAppearance="?android:textAppearanceSmall"
-        android:textColor="#ffffff"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:textColor="@color/light_font"
+        android:shadowColor="@color/text_shadow"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"/>
 <!--    android:textColor="#ffff ff"
     android:textSize="12sp"-->
 </LinearLayout>
