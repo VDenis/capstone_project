@@ -76,7 +76,7 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
     private void finishCreatingMenu(Menu menu) {
         // Retrieve the share menu item
         MenuItem menuItem = menu.findItem(R.id.action_share_note);
-        menuItem.setIntent(createShareForecastIntent());
+        menuItem.setIntent(createShareNoteIntent());
     }
 
     @Override
@@ -84,11 +84,11 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
         if (getActivity() instanceof NoteDetailActivity || getActivity() instanceof MainActivity) {
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.detail, menu);
-            finishCreatingMenu(menu);
+            //finishCreatingMenu(menu);
         }
     }
 
-    private Intent createShareForecastIntent() {
+    private Intent createShareNoteIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
@@ -188,8 +188,12 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
                 }
             }
             return true;
-        } else if (id == R.id.action_save_note) {
-
+        } else if (id == R.id.action_share_note) {
+            String noteName = mNoteTitleView.getText().toString();
+            String noteContent = mNoteContentView.getText().toString();
+            mShareNote = String.format("%s:\n%s", noteName, noteContent);
+            Intent intent = createShareNoteIntent();
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -262,7 +266,7 @@ public class NoteDetailFragment extends DropboxFragment implements LoaderManager
             mNoteTitleView.setText(noteName);
             mNoteContentView.setText(fileContent);
 
-            mShareNote = String.format("%s:\n%s", noteName, fileContent);
+            //mShareNote = String.format("%s:\n%s", noteName, fileContent);
 
             boolean useDetailActivity = getActivity().getResources()
                     .getBoolean(R.bool.use_detail_activity);
