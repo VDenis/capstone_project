@@ -59,3 +59,9 @@ You can add test device id into the "res/values/strings.xml" file.
 ```
 <string name="ad_mob_test_device">put id here</string>
 ```
+
+---
+
+### Screenshots
+
+<img src="screenshots/www.GIFCreator.me_vUCdSU.gif" height="400" alt="Screenshot"/>
